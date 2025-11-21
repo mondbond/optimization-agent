@@ -1,0 +1,26 @@
+[project]
+name = "optimizator-agent"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "IvanBahrii",email = "ivanbagrii7@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.10,<4.0"
+dependencies = [
+    "fastapi (>=0.121.3,<0.122.0)",
+    "uvicorn (>=0.38.0,<0.39.0)",
+    "langchain (>=1.0.8,<2.0.0)",
+    "langgraph (>=1.0.3,<2.0.0)",
+    "pydantic (>=2.12.4,<3.0.0)",
+    "langchain-ollama (>=1.0.0,<2.0.0)",
+    "boto3 (>=1.41.1,<2.0.0)",
+    "langchain-aws (>=1.0.0,<2.0.0)",
+    "langchain-mcp-adapters (>=0.1.13,<0.2.0)",
+    "loguru (>=0.7.3,<0.8.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
