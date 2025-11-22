@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  optimization-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: optimization-agent:latest
+    container_name: optimization-agent
+    ports:
+      - "8000:8000"
+    environment:
+      - LOCAL_LLM_URL=http://host.docker.internal:11434

@@ -1,0 +1,100 @@
+- name: "clear delivery optimization - transportation"
+  expected_optimization_task_type: "TRANSPORTATION"
+  history:
+    - role: "user"
+      content: |
+        I need help optimizing the delivery routes for my fleet of trucks to minimize fuel consumption and delivery time.
+
+- name: "not very clear delivery optimization - transportation"
+  expected_optimization_task_type: "TRANSPORTATION"
+  history:
+    - role: "user"
+      content: |
+        I need help optimizing the routes from supplyers to customers for my delivery trucks.
+
+- name: "not very clear chat delivery optimization - transportation"
+  expected_optimization_task_type: "TRANSPORTATION"
+  history:
+    - role: "user"
+      content: |
+        Hello!
+    - role: "assistant"
+      content: |
+        Hello! How can I help you?
+    - role: "user"
+      content: |
+        I have an ice cream business.
+    - role: "assistant"
+      content: |
+        That sounds great! How can I assist you with your ice cream business?
+    - role: "user"
+      content: |
+        I need help optimizing the routes from warehouses to my ice cream shops.
+    
+
+- name: "clear delivery optimization - blending"
+  expected_optimization_task_type: "BLENDING"
+  history:
+    - role: "user"
+      content: |
+        I need help optimizing the mixing of some of my ingridients for ice cream.
+
+- name: "not very clear delivery optimization - transportation"
+  expected_optimization_task_type: "BLENDING"
+  history:
+    - role: "user"
+      content: |
+        I need have red color and a blue color. It has different prise and I need combine it cheeper way possible.
+
+- name: "not very clear chat delivery optimization - transportation"
+  expected_optimization_task_type: "BLENDING"
+  history:
+    - role: "user"
+      content: |
+        Hello!
+    - role: "assistant"
+      content: |
+        Hello! How can I help you?
+    - role: "user"
+      content: |
+        I have an ice cream business.
+    - role: "assistant"
+      content: |
+        That sounds great! How can I assist you with your ice cream business?
+    - role: "user"
+      content: |
+        I need to mix diferent ice creams I have to create a new one product.
+
+
+- name: "clear delivery optimization - none"
+  expected_optimization_task_type: "NONE"
+  history:
+    - role: "user"
+      content: |
+        Hello. What is the capital of France?
+
+- name: "not very clear delivery optimization - none"
+  expected_optimization_task_type: "NONE"
+  history:
+    - role: "user"
+      content: |
+        I run a business and suddenly I faced with some optimization problems...
+
+- name: "not very clear chat delivery optimization - none"
+  expected_optimization_task_type: "NONE"
+  history:
+    - role: "user"
+      content: |
+        Hello!
+    - role: "assistant"
+      content: |
+        Hello! How can I help you?
+    - role: "user"
+      content: |
+        I have an ice cream business.
+    - role: "assistant"
+      content: |
+        That sounds great! How can I assist you with your ice cream business?
+    - role: "user"
+      content: |
+       I can not choose what is my favorite taste!!!
