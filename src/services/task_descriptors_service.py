@@ -4,9 +4,7 @@ from models.task.transportation_optimization_task import \
   TransportationOptimizationTask
 from utils.constants import REGISTERED_TASKS
 
-
 class TaskDescriptorService:
-
 
   @classmethod
   def get_task_descriptions_for_prompt(cls):

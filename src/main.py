@@ -11,7 +11,6 @@ async def chat_endpoint(request: UserMessage) -> dict:
 
   return {"reply": response['agent_message']}
 
-
 if __name__ == "__main__":
   import uvicorn
   uvicorn.run(web_app, host="localhost", port=8000)

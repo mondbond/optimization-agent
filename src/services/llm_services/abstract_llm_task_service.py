@@ -6,6 +6,7 @@ from src.graph.optimizator.state.optimization_agent_state import \
 
 class AbstractLlmTaskService(ABC):
 
+  @staticmethod
   @abstractmethod
-  async def invokde(self, state: OptimizatorAgentState):
+  async def invoke(self, state: OptimizatorAgentState):
     pass

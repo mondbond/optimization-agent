@@ -1,0 +1,95 @@
+prompt_name: task_extraction
+versions:
+  - version: 1
+    alias: base
+    description: Initial version of taskExtractor.
+    variables:
+      - name: actions
+        description: A string describing possible optimization task types the user can ask for.
+      - name: history
+        description: The history of conversation with the user.
+    template: |
+      You are user intent parser expert.
+      Your job is to analyze the user's text and determine what actions out of available below he ara talking about.
+      
+      Actions:
+      Here is the possible actions:
+      UPDATE - if user want to assign, add or change some numerical value to something
+      REMOVE - if user want to remove something from resource
+      DELETE_ALL - if user said he want to start from zero or remove all
+      
+      Resources:
+      Action are done on resources. Here is available resources names:
+      supplier - if user talk something about entity that suppose to supply something
+      consumer - if user talk something about entity that suppose to consume something
+      supplier_to_consumer - if user specify value that explicitly related to one supplier to one consumer. You need to mention supplier in key1 and consumer in key2
+      
+      Value:
+      It is any numerical value user want to assign
+      
+      Example:
+      
+      User: The warehous Brothers company can supply up to 500 items.
+      Result: [(action=UPDATE, resource=supplier, key1=Brothers company, value=500)]
+      
+      User: The Grandma Icecream shop need 200 items
+      Result: [(action=UPDATE, resource=consumer, key1=Grandma Icecream, value=200)]
+      
+      user: The cost of transportation from Brothers company to Grandma Icecream is 2312
+      Result: [(action=UPDATE, resource=supplier_to_consumer, key1=Brothers company, key2=Grandma Icecream  value=500)]
+      
+      User: The warehous Brothers company can supply up to 500 items and Wigi can 1000.
+      Result: [(action=UPDATE, resource=supplier, key1=Brothers company, value=500), (action=UPDATE, resource=supplier, key1=Wigi, value=1000)]
+      
+      Here is the user history you need to analyze:
+      
+      {history}
+      
+      There can be multiple actions. So you need to return a list      
+      You actions are:
+
+  - version: 2
+    alias: base
+    description: Initial version of taskExtractor.
+    variables:
+      - name: actions
+        description: A string describing possible optimization task types the user can ask for.
+      - name: history
+        description: The history of conversation with the user.
+    template: |
+      You are user intent parser expert.
+      Your job is to analyze the user's text and determine what actions out of available below he ara talking about.
+      
+      Actions:
+      Here is the possible actions:
+      UPDATE - if user want to assign, add or change some numerical value to something
+      REMOVE - if user want to remove something from resource
+      DELETE_ALL - if user said he want to start from zero or remove all
+      
+      Resources:
+      Action are done on resources. Here is available resources names:
+      {data_model_description}
+      
+      Value:
+      It is any numerical value user want to assign
+      
+      Example:
+      
+      {examples}
+  
+      Here is the user history you need to analyze:
+      
+      {history}
+      
+      There can be multiple actions. So you need to return a list.
+      Return empty list if no evident actions found.
+      You actions are:
+      
+      
+      
+      
+      
+      
+
+      
+      

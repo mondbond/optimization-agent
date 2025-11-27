@@ -12,5 +12,7 @@ class NotDefinedOptimizationTask(AbstractOptimizationTask):
   def get_type(cls):
     return OptimizationType.NONE
 
-  def get_steps(self):
-    return None
+  @staticmethod
+  def get_optimization_data_model():
+    raise NotImplementedError("Empty type has no task implementation")
+
