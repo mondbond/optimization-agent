@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from pydantic import BaseModel, Field
 
-class DataItem(BaseModel):
+class MatrixDataItem(BaseModel):
 
-  data : dict = Field()
+  data : dict[str, dict[str, int]] = Field()
   data_name : str = Field()
   data_type : str = Field()
   description : str = Field()
@@ -11,6 +11,9 @@ class DataItem(BaseModel):
 
   def update(self, key1 = None, key2 = None, value = None):
     self.data[key1] = value
+
+    if key2:
+      self.data[key1][key2] = value
 
   @property
   def data(self) -> dict:

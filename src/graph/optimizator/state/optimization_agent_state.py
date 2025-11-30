@@ -17,3 +17,5 @@ class OptimizatorAgentState(TypedDict):
   user_message: str
 
   agent_message: str | None
+
+  confirmation_stage: bool | None

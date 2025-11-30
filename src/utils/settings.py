@@ -3,6 +3,8 @@ from src.utils.logger import logger
 
 class Settings(BaseSettings):
 
+
+  # todo  move to init
   # LOCAL LLM
   LOCAL_OLLAMA_URL : str = "http://localhost:11434"
 
@@ -14,6 +16,10 @@ class Settings(BaseSettings):
   LANGSMITH_ENDPOINT : str = "https://api.smith.langchain.com"
   LANGSMITH_API_KEY : str = "none"
   LANGSMITH_PROJECT : str = "default"
+
+  # MCP
+  OPTIMIZATION_MCP_URL : str = "http://localhost"
+  OPTIMIZATION_MCP_PORT : str = "8777"
 
   model_config = SettingsConfigDict(env_file=".env")
 

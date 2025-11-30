@@ -3,6 +3,8 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.constants import START, END
 from langgraph.graph import StateGraph
 
+from graph.optimizator.nodes.repeat_node import repeat_node
+from graph.optimizator.nodes.resolve_node import resolve_node
 from graph.optimizator.nodes.task_intent_node import task_intent_node
 from src.graph.optimizator.state.optimization_agent_state import \
   OptimizatorAgentState
@@ -19,9 +21,12 @@ class OptimizatorAgent:
     graph_builder.add_node("TASK_INTENT_NODE", task_intent_node)
     graph_builder.add_node("DATA_COLLECTION_NODE", data_collection_node)
     graph_builder.add_node("ANSWER_NODE", answer_node)
+    graph_builder.add_node("RE_ASK_NODE", repeat_node)
+    graph_builder.add_node("RESOLVE_NODE", resolve_node)
 
     graph_builder.add_edge(START, "TASK_INTENT_NODE")
     graph_builder.add_edge("ANSWER_NODE", END)
+    graph_builder.add_edge("RESOLVE_NODE", "ANSWER_NODE")
 
     graph_builder.add_conditional_edges(
           "TASK_INTENT_NODE",
@@ -37,15 +42,24 @@ class OptimizatorAgent:
         lambda state: state["route"],
         {
           "answer": "ANSWER_NODE",
-          "next": "ANSWER_NODE",
+          "next": "RE_ASK_NODE",
         }
     )
 
+    graph_builder.add_conditional_edges(
+        "RE_ASK_NODE",
+        lambda state: state["route"],
+        {
+          "answer": "ANSWER_NODE",
+          "not_confirmed" : "DATA_COLLECTION_NODE",
+          "next": "RESOLVE_NODE",
+        }
+    )
 
     self._graph = graph_builder.compile(checkpointer=memory)
 
-  def run(self, inputs, config={'thread_id': 'default_thread'}):
-    return self._graph.invoke({"history": [HumanMessage(inputs)]},
+  async def run(self, inputs, config={'thread_id': 'default_thread'}):
+    return await self._graph.ainvoke({"history": [HumanMessage(inputs)]},
                               {'thread_id': config['thread_id']})
 
 optimization_agent = OptimizatorAgent()

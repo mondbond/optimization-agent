@@ -1,17 +1,21 @@
-from pydantic_settings.sources import providers
+from langchain_mcp_adapters.client import MultiServerMCPClient
+import asyncio
 
 from models.model_validation import ModelValidation
 from models.task.datamodel.abstract_data_model import AbstractDataModel
-from models.task.datamodel.data_item import DataItem
+from models.task.datamodel.dataitem.data_item import DataItem
 from typing import ClassVar
 
 
 class TransportationDataModel(AbstractDataModel):
 
+  # todo why classVar
   SUPPLIER_AVAILABILITY : ClassVar[str] = "supplier_availability"
   CONSUMER_NEEDS : ClassVar[str] = "consumer_needs"
   SUPPLIER_TO_CONSUMER : ClassVar[str] = "supplier_to_consumer"
 
+
+  # why not use __init__
   @classmethod
   def create(cls):
 
@@ -20,6 +24,7 @@ class TransportationDataModel(AbstractDataModel):
           data_name = cls.SUPPLIER_AVAILABILITY,
           data = {},
           data_type = 'map',
+          value_type='float',
           description = 'if user talk something about entity that suppose to supply something',
           action_examples = f'''User: The warehous Brothers company can supply up to 500 items.
       Result: [(action=UPDATE, resource={cls.SUPPLIER_AVAILABILITY}, key1=Brothers company, value=500)]''',
@@ -29,7 +34,8 @@ class TransportationDataModel(AbstractDataModel):
           data_name = cls.CONSUMER_NEEDS,
           data = {},
           data_type = 'map',
-          description ='if user talk something about entity that suppose to consume something',
+          value_type='float',
+          description ='if user talk something about entity that suppose to consume something ot act like a consumers',
           action_examples = f'''
           User: The Grandma Icecream shop need 200 items
       Result: [(action=UPDATE, resource={cls.CONSUMER_NEEDS}, key1=Grandma Icecream, value=200)]
@@ -39,6 +45,7 @@ class TransportationDataModel(AbstractDataModel):
           data_name = cls.SUPPLIER_TO_CONSUMER,
           data = {},
           data_type = 'matrix',
+          value_type='float',
           description = 'if user specify value that explicitly related to one supplier to one consumer. You need to mention supplier in key1 and consumer in key2',
           action_examples=f'''
 user: The cost of transportation from Brothers company to Grandma Icecream is 2312
@@ -64,9 +71,9 @@ user: The cost of transportation from Brothers company to Grandma Icecream is 23
 
 
     if len(providers.data) == 0:
-      return ModelValidation(["List of providers need to be provided first. At leas one provider need to be provided"], None)
+      return ModelValidation(["List of consumers need to be provided first. At leas one consumer need to be provided"], None)
 
-    providers_rules = self._get_empty_validation_rules(providers, "Amount of items need to be provided for provider")
+    providers_rules = self._get_empty_validation_rules(providers, "Amount of items need to be consumed for consumer")
     if len(providers_rules) > 0:
       return ModelValidation(providers_rules, None)
 
@@ -77,6 +84,11 @@ user: The cost of transportation from Brothers company to Grandma Icecream is 23
     supplier_to_providers_rules = self._get_supplier_to_provider_cost_rules(supplier_to_providers, suppliers, providers)
     if len(supplier_to_providers_rules) > 0:
       return ModelValidation(None, supplier_to_providers_rules)
+
+    objective_function = self._get_objective_function()
+    if not objective_function:
+      return ModelValidation(None, ["Objective function need to be defined. User must select if he want to minimize or maximize."])
+
 
     return ModelValidation(None, None)
 
@@ -102,6 +114,8 @@ user: The cost of transportation from Brothers company to Grandma Icecream is 23
 
     return text
 
+  def _get_objective_function(self):
+    return 'minimize'
 
   @staticmethod
   def _get_supplier_to_provider_cost_rules(supplier_to_provider: DataItem,
@@ -118,28 +132,75 @@ user: The cost of transportation from Brothers company to Grandma Icecream is 23
       if supplier not in supplier_to_provider.data:
         rules.append(f"Connection cost between supplier {supplier} and providers need to be given")
         continue
+
+      providers_of_supplier = supplier_to_provider.data[supplier]
+
       for provider in providers_list:
-        rules.append(f"Cost from supplier {supplier} to provider {provider} need to be given")
-        continue
-        if not provider.data[supplier][provider]:
+        if provider not in providers_of_supplier:
+          rules.append(f"Cost from supplier {supplier} to provider {provider} need to be given")
+          continue
+        if not providers_of_supplier[provider] or providers_of_supplier[provider] <= 0:
           rules.append(f"Connection cost between supplier {supplier} and provider {provider} has no value")
 
     return rules
 
+  def to_mcp_dict(self) -> dict:
+    return {
+      "linear_transportation_task": {
+      "supplier_to_supply": self._data_map[self.SUPPLIER_AVAILABILITY].data,
+      "consumer_to_consume": self._data_map[self.CONSUMER_NEEDS].data,
+      "supplier_to_consumer_cost": self._data_map[self.SUPPLIER_TO_CONSUMER].data,
+      "objective_function" : self._get_objective_function()
+      }
+    }
 
 if __name__ == "__main__":
-  model = TransportationDataModel()
+  model = TransportationDataModel.create()
 
-  model.update_data(TransportationDataModel.SUPPLIER_AVAILABILITY, "A", 100)
-  model.update_data(TransportationDataModel.SUPPLIER_AVAILABILITY, "B", 200)
+  model.update_data(TransportationDataModel.SUPPLIER_AVAILABILITY, "A", 700)
+  model.update_data(TransportationDataModel.SUPPLIER_AVAILABILITY, "B", 1100)
 
   model.update_data(TransportationDataModel.CONSUMER_NEEDS, "X", 150)
-  model.update_data(TransportationDataModel.CONSUMER_NEEDS, "Y", None)
+  model.update_data(TransportationDataModel.CONSUMER_NEEDS, "Y", 400)
 
   model.update_data(TransportationDataModel.SUPPLIER_TO_CONSUMER, key="A", key2="X", value=4)
+  model.update_data(TransportationDataModel.SUPPLIER_TO_CONSUMER, key="A", key2="Y", value=3)
+  model.update_data(TransportationDataModel.SUPPLIER_TO_CONSUMER, key="B", key2="X", value=12)
+  model.update_data(TransportationDataModel.SUPPLIER_TO_CONSUMER, key="B", key2="Y", value=1)
 
   validation = model.validate_model_with_text_response()
+
 
   print(validation.is_valid)
   print(validation.rules_for_prompt)
   print(validation.rules_for_injections)
+
+  tool_dict = model.to_mcp_dict()
+
+
+  mcp_url = "http://0.0.0.0:8777/mcp"
+
+
+  mcp_client = None
+
+  # http://mond_mcp:8887/mcp
+  if mcp_url is not None and mcp_url != "":
+    mcp_client = MultiServerMCPClient(
+        {
+          "optimizator_mcp": {
+            "transport": "streamable_http",
+            "url": mcp_url,
+          }
+        }
+    )
+
+  async def main():
+    tools = await mcp_client.get_tools()
+    print(tools)
+
+    result = await tools[0].coroutine(**tool_dict)
+    print(result)
+
+  asyncio.run(main())
+
+

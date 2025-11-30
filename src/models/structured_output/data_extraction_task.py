@@ -17,6 +17,4 @@ class DataExtractionAction(BaseModel):
 
   key2: str = Field(description="Second name to use only if the modifiable resource has a matrix type")
 
-  value: float = Field(
-      description="Actual value to be added"
-  )
+  value: str = Field(description="Actual value to be added. It can be float, int or string depending on the resource type")

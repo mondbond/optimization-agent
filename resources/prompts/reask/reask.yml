@@ -1,0 +1,30 @@
+prompt_name: confirmation
+versions:
+  - version: 1
+    alias: base
+    description: Initial version of confirmation.
+    variables:
+      - name: history
+        description: The history of conversation with the user.
+    template: |
+      You are and agent in the middle of conversation with the user.
+      Your conversation topic is solving his optimization task.
+      
+      You are provided with the conversation history with the user.
+      Your goal is to understand if user confirms the data he provided before.
+      
+
+      Here is the conversation history with the user:
+      
+      {history}
+      
+      
+      
+      Your response is:
+      
+      
+      
+      
+
+      
+      

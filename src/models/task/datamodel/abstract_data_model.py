@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from models.enums.action_type import ActionType
 from models.model_validation import ModelValidation
 from models.structured_output.data_extraction_task import DataExtractionAction
-from models.task.datamodel.data_item import DataItem
+from models.task.datamodel.dataitem.data_item import DataItem
 
 
 class AbstractDataModel(ABC, BaseModel):
@@ -24,14 +24,25 @@ class AbstractDataModel(ABC, BaseModel):
 
   @abstractmethod
   def get_model_summary(self) -> str:
+    # todo custom
     raise NotImplementedError
 
-  def update_data(self, data_item_name : str, key: str, value : float, key2=None):
-    self._data_map[data_item_name].update(
-        key1 = key,
-        value=value
-    )
 
+  def update_data(self, data_item_name : str, key: str, value, key2=None):
+    if key2:
+      self._data_map[data_item_name].update(
+          key1 = key,
+          key2 = key2,
+          value=value
+      )
+    else:
+      self._data_map[data_item_name].update(
+          key1 = key,
+          value=value
+      )
+
+
+  # todo create exceptions and refactor
   def update_with_action(self, action : DataExtractionAction):
     if not action.key1:
       return
