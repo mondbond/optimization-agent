@@ -24,7 +24,6 @@ def data_collection_node(state: OptimizatorAgentState):
       'route' : 'next',
     }
 
-
   history_deep_focus = 1
   if not state.get('optimization_data_model'):
     for task in REGISTERED_TASKS:
@@ -53,26 +52,26 @@ def data_collection_node(state: OptimizatorAgentState):
         'optimization_task_type' : state['optimization_task_type']
       }
 
-  DataActionExecutor.execute(action_list, state['optimization_data_model'])
-
-  validation : ModelValidation = state['optimization_data_model'].validate_model_with_text_response()
-  print("validation: {}", validation)
+  validation : ModelValidation = DataActionExecutor.execute(action_list, state['optimization_data_model'])
 
   if validation.is_valid:
-    return {
-      'route' : 'answer',
-      'agent_message' : 'Data collection completed successfully. Are you ready to proceed to optimization?' + state['optimization_data_model'].get_model_summary(),
-      'confirmation_stage' : True,
-      'optimization_data_model' : state['optimization_data_model'],
-      'optimization_task_type' : state['optimization_task_type']
+    validation : ModelValidation = state['optimization_data_model'].validate_model_with_text_response()
+    print("validation: {}", validation)
 
-    }
-  else:
-    answer = DataCollectionService.invoke(state['history'], validation)
+    if validation.is_valid:
+      return {
+        'route' : 'answer',
+        'agent_message' : 'Data collection completed successfully. Are you ready to proceed to optimization?' + state['optimization_data_model'].get_model_summary(),
+        'confirmation_stage' : True,
+        'optimization_data_model' : state['optimization_data_model'],
+        'optimization_task_type' : state['optimization_task_type']
+
+      }
+
 
   return {
     'route' : 'answer',
-    'agent_message' : answer,
+    'agent_message' : DataCollectionService.invoke(state['history'], validation),
     'optimization_data_model' : state['optimization_data_model'],
     'optimization_task_type' : state['optimization_task_type']
   }

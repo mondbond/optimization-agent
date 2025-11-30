@@ -3,8 +3,19 @@ import asyncio
 
 from models.model_validation import ModelValidation
 from models.task.datamodel.abstract_data_model import AbstractDataModel
-from models.task.datamodel.dataitem.data_item import DataItem
+from models.task.datamodel.dataitem.data_item import AbstractDataItem
 from typing import ClassVar
+
+from models.task.datamodel.dataitem.float_value_matrix_data_item import \
+  FloatValueMatrixDataItem
+# from models.task.datamodel.dataitem.float_value_matrix_data_item import \
+#   FloatValueMatrixDataItem
+from models.task.datamodel.dataitem.map_data_item import \
+  MapWithFloatValueDataItem
+from models.task.datamodel.dataitem.string_data_item import StringDataItem
+
+
+# from models.task.datamodel.dataitem.string_data_item import StringDataItem
 
 
 class TransportationDataModel(AbstractDataModel):
@@ -13,6 +24,7 @@ class TransportationDataModel(AbstractDataModel):
   SUPPLIER_AVAILABILITY : ClassVar[str] = "supplier_availability"
   CONSUMER_NEEDS : ClassVar[str] = "consumer_needs"
   SUPPLIER_TO_CONSUMER : ClassVar[str] = "supplier_to_consumer"
+  OBJECTIVE_FUNCTION : ClassVar[str] = "objective_function"
 
 
   # why not use __init__
@@ -20,37 +32,33 @@ class TransportationDataModel(AbstractDataModel):
   def create(cls):
 
     data = [
-      DataItem(
+      MapWithFloatValueDataItem(
           data_name = cls.SUPPLIER_AVAILABILITY,
-          data = {},
-          data_type = 'map',
-          value_type='float',
           description = 'if user talk something about entity that suppose to supply something',
           action_examples = f'''User: The warehous Brothers company can supply up to 500 items.
       Result: [(action=UPDATE, resource={cls.SUPPLIER_AVAILABILITY}, key1=Brothers company, value=500)]''',
-
       ),
-      DataItem(
+      MapWithFloatValueDataItem(
           data_name = cls.CONSUMER_NEEDS,
-          data = {},
-          data_type = 'map',
-          value_type='float',
           description ='if user talk something about entity that suppose to consume something ot act like a consumers',
           action_examples = f'''
           User: The Grandma Icecream shop need 200 items
       Result: [(action=UPDATE, resource={cls.CONSUMER_NEEDS}, key1=Grandma Icecream, value=200)]
           '''
       ),
-      DataItem(
+      FloatValueMatrixDataItem(
           data_name = cls.SUPPLIER_TO_CONSUMER,
-          data = {},
-          data_type = 'matrix',
-          value_type='float',
           description = 'if user specify value that explicitly related to one supplier to one consumer. You need to mention supplier in key1 and consumer in key2',
           action_examples=f'''
 user: The cost of transportation from Brothers company to Grandma Icecream is 2312
       Result: [(action=UPDATE, resource={cls.SUPPLIER_TO_CONSUMER}, key1=Brothers company, key2=Grandma Icecream  value=500)]
-''')]
+'''),
+      StringDataItem(
+          data_name=cls.OBJECTIVE_FUNCTION,
+          description=f"This is the value of  {cls.OBJECTIVE_FUNCTION} with value that represents the objective function of the blending task. The value is either minimize or maximize. It does not require keys.",
+          action_examples=f'action=UPDATE. object={cls.OBJECTIVE_FUNCTION}. value=minimise ot maximize only'
+      ),
+    ]
 
     return cls(data_items=data)
 
@@ -85,9 +93,12 @@ user: The cost of transportation from Brothers company to Grandma Icecream is 23
     if len(supplier_to_providers_rules) > 0:
       return ModelValidation(None, supplier_to_providers_rules)
 
-    objective_function = self._get_objective_function()
+    objective_function = self._data_map.get(self.OBJECTIVE_FUNCTION).data
     if not objective_function:
-      return ModelValidation(None, ["Objective function need to be defined. User must select if he want to minimize or maximize."])
+      return ModelValidation(["Objective function need to be defined. User must select if he want to minimize or maximize."], None)
+
+    if objective_function.lower() not in ['minimize', 'maximize']:
+      return ModelValidation([f"Objective function value {objective_function} is not valid. It must be either minimize or maximize."], None)
 
 
     return ModelValidation(None, None)
@@ -114,13 +125,10 @@ user: The cost of transportation from Brothers company to Grandma Icecream is 23
 
     return text
 
-  def _get_objective_function(self):
-    return 'minimize'
-
   @staticmethod
-  def _get_supplier_to_provider_cost_rules(supplier_to_provider: DataItem,
-      suppliers: DataItem,
-      providers: DataItem
+  def _get_supplier_to_provider_cost_rules(supplier_to_provider: AbstractDataItem,
+      suppliers: AbstractDataItem,
+      providers: AbstractDataItem
   ) -> list[str] | None:
 
     rules = []
@@ -150,7 +158,7 @@ user: The cost of transportation from Brothers company to Grandma Icecream is 23
       "supplier_to_supply": self._data_map[self.SUPPLIER_AVAILABILITY].data,
       "consumer_to_consume": self._data_map[self.CONSUMER_NEEDS].data,
       "supplier_to_consumer_cost": self._data_map[self.SUPPLIER_TO_CONSUMER].data,
-      "objective_function" : self._get_objective_function()
+      "objective_function" : self._data_map[self.OBJECTIVE_FUNCTION].data
       }
     }
 

@@ -16,4 +16,4 @@ class BlendOptimizationTask(AbstractOptimizationTask):
 
     @staticmethod
     def get_optimization_data_model() -> AbstractDataModel:
-        return BlendDataModel()
+        return BlendDataModel.create()

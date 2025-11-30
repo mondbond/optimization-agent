@@ -4,14 +4,21 @@ from pydantic import BaseModel, Field
 from models.enums.action_type import ActionType
 from models.model_validation import ModelValidation
 from models.structured_output.data_extraction_task import DataExtractionAction
-from models.task.datamodel.dataitem.data_item import DataItem
+from models.task.datamodel.dataitem.data_item import AbstractDataItem
+from models.task.datamodel.dataitem.float_value_matrix_data_item import \
+  FloatValueMatrixDataItem
+from models.task.datamodel.dataitem.map_data_item import \
+  MapWithFloatValueDataItem
+from models.task.datamodel.dataitem.string_data_item import StringDataItem
+from models.task.datamodel.dataitem.string_list_data_item import \
+  StringListDataItem
 
 
 class AbstractDataModel(ABC, BaseModel):
-  data_items: list[DataItem] = Field()
+  data_items: list[MapWithFloatValueDataItem | StringDataItem | FloatValueMatrixDataItem | StringListDataItem] = Field()
 
   def model_post_init(self, __context):
-    self._data_map = {item.name : item for item in self.data_items}
+    self._data_map = {item.data_name : item for item in self.data_items}
 
   @classmethod
   @abstractmethod
@@ -44,8 +51,8 @@ class AbstractDataModel(ABC, BaseModel):
 
   # todo create exceptions and refactor
   def update_with_action(self, action : DataExtractionAction):
-    if not action.key1:
-      return
+    # if not action.key1:
+    #   return
 
     if action.action == ActionType.UPDATE:
       if action.key2:
@@ -71,7 +78,7 @@ class AbstractDataModel(ABC, BaseModel):
   def get_resource_descriptions(self) -> str:
     descriptions = ""
     for item in self._data_map.values():
-      descriptions += f"{item.name}: {item.description}\n"
+      descriptions += f"{item.data_name}: {item.description}\n"
     return descriptions
 
   def get_resource_action_examples(self) -> str:
@@ -81,7 +88,7 @@ class AbstractDataModel(ABC, BaseModel):
     return examples
 
   @staticmethod
-  def _get_empty_validation_rules(data_items: DataItem, msg) -> list[
+  def _get_empty_validation_rules(data_items: AbstractDataItem, msg) -> list[
                                                                           str] | None:
     rules = []
 
