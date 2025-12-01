@@ -32,7 +32,7 @@ def data_collection_node(state: OptimizatorAgentState):
     }
 
   action_list: ExtractionActionList = ExtractActionTaskService.invoke(
-      state['history'], state['optimization_data_model'],
+      state['history'], state['optimization_data_model'], state.get('optimization_data_model').already_existed_entities(),
       max_turns=history_deep_focus)
 
   logger.info(f"Extracted actions: {action_list.tasks}")
@@ -46,9 +46,9 @@ def data_collection_node(state: OptimizatorAgentState):
       'optimization_task_type': state['optimization_task_type']
     }
 
-  model_validataion: ModelValidationInstructions = populate_and_validate_data_model(state,
+  instructions: ModelValidationInstructions = populate_and_validate_data_model(state,
                                                                                     action_list)
-  if model_validataion.is_valid:
+  if instructions.is_valid:
     return {
       'route': 'answer',
       'agent_message': 'Data collection completed successfully. Are you ready to proceed to optimization?' +
@@ -61,7 +61,7 @@ def data_collection_node(state: OptimizatorAgentState):
     return {
       'route': 'answer',
       'agent_message': RespondUserWithErrorsService.invoke(state['history'],
-                                                           validation_rules_to_respond_to_user),
+                                                           instructions),
       'optimization_data_model': state['optimization_data_model'],
       'optimization_task_type': state['optimization_task_type']
     }

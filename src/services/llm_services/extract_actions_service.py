@@ -14,7 +14,7 @@ class ExtractActionTaskService:
   """
 
   @staticmethod
-  def invoke(history, data_model: AbstractDataModel,
+  def invoke(history, data_model: AbstractDataModel, already_existed_entities : str,
       max_turns=1) -> ExtractionActionList:
     history = HistoryLimitationService.dialog_turn_limiter(history,
                                                            max_turns=settings.HISTORY_CONTEXT_MULTIPLIER * 1)
@@ -33,6 +33,7 @@ class ExtractActionTaskService:
     extraction_task: ExtractionActionList = chain.invoke({
       "history": history,
       "data_model_description": resource_description,
+      "already_existed_entities": already_existed_entities,
       "examples": examples
     })
 

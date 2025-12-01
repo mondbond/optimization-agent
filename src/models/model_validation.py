@@ -6,8 +6,15 @@ class ModelValidationInstructions:
   """
 
   def __init__(self, rules_for_prompt : list[str] | None, rules_for_injections: list[str] | None):
-    self._rules_for_prompt = rules_for_prompt
-    self._rules_for_injections = rules_for_injections
+
+    self._rules_for_prompt = []
+    self._rules_for_injections = []
+
+    if rules_for_prompt is not None:
+      self._rules_for_prompt = rules_for_prompt
+
+    if rules_for_injections is not None:
+      self._rules_for_injections = rules_for_injections
 
 
   @property
@@ -20,7 +27,7 @@ class ModelValidationInstructions:
 
   @property
   def is_valid(self) -> bool:
-    if self._rules_for_prompt is None and self._rules_for_injections is None:
+    if self._rules_for_prompt is None or  len(self._rules_for_prompt) == 0:
       return True
 
     return False

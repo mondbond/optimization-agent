@@ -18,6 +18,21 @@ class TransportationDataModel(AbstractDataModel):
   4. OBJECTIVE_FUNCTION: String indicating whether to minimize or maximize the objective function
   """
 
+  def already_existed_entities(self) -> str:
+    if len(self._data_map.get(self.SUPPLIER_AVAILABILITY).data.keys()) == 0:
+      return "No entities exist yet."
+
+    text = "Existing suppliers:\n"
+    supplier_data = self._data_map.get(self.SUPPLIER_AVAILABILITY)
+    for supplier in supplier_data.data.keys():
+      text += f"- {supplier}\n"
+    text += "Existing consumers:\n"
+    consumer_data = self._data_map.get(self.CONSUMER_NEEDS)
+    for consumer in consumer_data.data.keys():
+      text += f"- {consumer}\n"
+
+    return text
+
   SUPPLIER_AVAILABILITY: ClassVar[str] = "supplier_availability"
   CONSUMER_NEEDS: ClassVar[str] = "consumer_needs"
   SUPPLIER_TO_CONSUMER: ClassVar[str] = "supplier_to_consumer"

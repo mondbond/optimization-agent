@@ -66,6 +66,15 @@ class AbstractDataModel(ABC, BaseModel):
     """
     pass
 
+  @abstractmethod
+  def already_existed_entities(self) -> str:
+    """
+    Provides a string representation of already existing entities in the data model.
+    Goal is to make LLM aware of what entities are already present to avoid user's mistypes.
+    :return: string representation of already existing entities.
+    """
+    pass
+
   def update_data(self, data_item_name: str, key: str, value, key2=None):
     """
     Updates the data item in the model with the provided key(s) and value.

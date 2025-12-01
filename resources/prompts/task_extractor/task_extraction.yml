@@ -8,6 +8,8 @@ versions:
         description: A string describing possible optimization task types the user can ask for.
       - name: history
         description: The history of conversation with the user.
+      - name: already_existed_entities
+        description: Already existed entities
     template: |
       You are user intent parser expert.
       Your job is to analyze the user's text and determine what actions out of available below he ara talking about.
@@ -44,6 +46,9 @@ versions:
       Here is the user history you need to analyze:
       
       {history}
+      
+      Here is the already existed entities. You can use them to better understand user intent. Use them when user refer to some entity without full name or do a mistype.
+      {already_existed_entities}
       
       There can be multiple actions. So you need to return a list      
       You actions are:

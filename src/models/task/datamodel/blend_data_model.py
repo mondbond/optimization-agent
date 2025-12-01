@@ -133,6 +133,21 @@ class BlendDataModel(AbstractDataModel):
       }
     }
 
+  def already_existed_entities(self) -> str:
+    if len(self._data_map.get(self.MATERIAL_TO_COST).data.keys()) == 0:
+      return "No entities exist yet."
+
+    text = "Already existing materials:\n"
+    material_to_cost = self._data_map.get(self.MATERIAL_TO_COST)
+    for material in material_to_cost.data.keys():
+      text += f"- {material}\n"
+    text += "Already existing compositions:\n"
+    compositions = self._data_map.get(self.COMPOSITIONS)
+    for composition in compositions.data:
+      text += f"- {composition}\n"
+
+    return text
+
 
 
 
