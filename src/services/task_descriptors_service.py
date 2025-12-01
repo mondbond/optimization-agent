@@ -11,7 +11,7 @@ class TaskDescriptorService:
   def get_task_descriptions_for_prompt(cls):
     messages = []
     for task in REGISTERED_TASKS:
-      msg = f"Type: {task.get_type().value} \nDescription: {task.description()} \n"
+      msg = f"Type: {task.get_type().value} \nDescription: {task.prompt_description()} \n"
       messages.append(msg)
     task_descriptions = "".join(messages)
     return task_descriptions

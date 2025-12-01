@@ -14,7 +14,7 @@ class AbstractOptimizationTask(ABC):
 
   @staticmethod
   @abstractmethod
-  def description() -> str:
+  def prompt_description() -> str:
     """
     Provides a description of the optimization task type for later use in prompt injection.
     :return: description string

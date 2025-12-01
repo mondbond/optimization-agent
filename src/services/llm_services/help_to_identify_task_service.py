@@ -40,7 +40,7 @@ class TaskTypeIdentificationHelpAnswerService:
       registered_tasks: list[AbstractOptimizationTask]) -> str:
     messages = []
     for task in registered_tasks:
-      msg = f"Type: {task.get_type().value}, Description: {task.description()} \n"
+      msg = f"Type: {task.get_type().value}, Description: {task.prompt_description()} \n"
       messages.append(msg)
     task_descriptions = "".join(messages)
     return task_descriptions

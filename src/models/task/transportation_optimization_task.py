@@ -8,7 +8,7 @@ from src.models.task.abstract_optimization_task import AbstractOptimizationTask
 class TransportationOptimizationTask(AbstractOptimizationTask):
 
   @staticmethod
-  def description():
+  def prompt_description():
     return "This optimization type need to be choosen when you can clearly detect entities that supply and entities that can consume from suppliers."
 
   @staticmethod

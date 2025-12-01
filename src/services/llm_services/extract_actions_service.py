@@ -20,8 +20,8 @@ class ExtractActionTaskService:
                                                            max_turns=settings.HISTORY_CONTEXT_MULTIPLIER * 1)
     help_answer_prompt = prompt_manager.get_prompt('task_extraction')
 
-    resource_description = data_model.get_resource_descriptions()
-    examples = data_model.get_resource_action_examples()
+    resource_description = data_model.get_prompt_resource_descriptions()
+    examples = data_model.get_prompt_resource_action_examples()
 
     llm = get_llm().with_structured_output(ExtractionActionList)
 

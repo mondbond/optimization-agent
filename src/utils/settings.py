@@ -14,6 +14,10 @@ class Settings(BaseSettings):
   REASONING_LLM_SOURCE_MODEL : str = "ollama/mistral:instruct"
 
   # OPERATIONAL_CONSTANTS
+  """
+  Multiplier to increase the amount of historical context to send to the LLM.
+  For example, if set to 2, it will send twice the amount of historical context defined in the system.
+  """
   HISTORY_CONTEXT_MULTIPLIER : int = 1
 
   # LANGSMITH

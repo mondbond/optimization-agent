@@ -9,7 +9,7 @@ class BlendOptimizationTask(AbstractOptimizationTask):
   """
 
   @staticmethod
-  def description():
+  def prompt_description():
     return "This optimization type need to be choosen when you can clearly detect entities like ingredients that togather can create some products."
 
   @staticmethod

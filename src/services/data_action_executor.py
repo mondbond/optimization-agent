@@ -1,5 +1,5 @@
 from models.exceptions.chat_error_exception import DataPopulationError
-from models.model_validation import ModelValidation
+from models.model_validation import ModelValidationInstructions
 from models.structured_output.action_extractors import ExtractionActionList
 
 
@@ -11,12 +11,12 @@ class DataModelPopulationService:
   """
 
   @staticmethod
-  def execute(action_list: ExtractionActionList, model) -> ModelValidation:
+  def execute(action_list: ExtractionActionList, model) -> ModelValidationInstructions:
     try:
       for action in action_list.tasks:
         model.update_with_action(action)
     except DataPopulationError as e:
-      return ModelValidation(rules_for_prompt=[e.get_rule()],
-                             rules_for_injections=None)
+      return ModelValidationInstructions(rules_for_prompt=[e.get_rule()],
+                                         rules_for_injections=None)
 
-    return ModelValidation(rules_for_injections=None, rules_for_prompt=None)
+    return ModelValidationInstructions(rules_for_injections=None, rules_for_prompt=None)

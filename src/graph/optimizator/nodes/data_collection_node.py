@@ -2,7 +2,7 @@ from graph.optimizator.state.optimization_agent_state import \
   OptimizatorAgentState
 from models.enums.action_type import ActionType
 from models.enums.optimization_type import OptimizationType
-from models.model_validation import ModelValidation
+from models.model_validation import ModelValidationInstructions
 from models.structured_output.action_extractors import ExtractionActionList
 from services.data_action_executor import DataModelPopulationService
 from services.llm_services.data_collection_service import \
@@ -46,8 +46,8 @@ def data_collection_node(state: OptimizatorAgentState):
       'optimization_task_type': state['optimization_task_type']
     }
 
-  model_validataion: ModelValidation = populate_and_validate_data_model(state,
-                                                                        action_list)
+  model_validataion: ModelValidationInstructions = populate_and_validate_data_model(state,
+                                                                                    action_list)
   if model_validataion.is_valid:
     return {
       'route': 'answer',
@@ -68,8 +68,8 @@ def data_collection_node(state: OptimizatorAgentState):
 
 
 def populate_and_validate_data_model(state,
-    action_list: ExtractionActionList) -> ModelValidation:
-  validation_rules_during_population: ModelValidation = DataModelPopulationService.execute(
+    action_list: ExtractionActionList) -> ModelValidationInstructions:
+  validation_rules_during_population: ModelValidationInstructions = DataModelPopulationService.execute(
     action_list, state[
         'optimization_data_model'])
 
@@ -77,13 +77,13 @@ def populate_and_validate_data_model(state,
     logger.info("Data model population resulted in validation errors.")
     return validation_rules_during_population
 
-  model_validation_rules: ModelValidation = (state['optimization_data_model']
-                                             .validate_model_with_text_response())
+  model_validation_rules: ModelValidationInstructions = (state['optimization_data_model']
+                                                         .validate_model_with_instruction())
   if not model_validation_rules.is_valid:
     logger.info("Data model validation after population resulted in errors.")
     return model_validation_rules
 
-  return ModelValidation.valid()
+  return ModelValidationInstructions.valid()
 
 
 def clear_task_related_data(state):

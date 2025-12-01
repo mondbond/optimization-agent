@@ -1,6 +1,9 @@
 
 
-class ModelValidation:
+class ModelValidationInstructions:
+  """
+  ModelValidation holds the instructions for the model llm to validate and speak with user about issues in the model.
+  """
 
   def __init__(self, rules_for_prompt : list[str] | None, rules_for_injections: list[str] | None):
     self._rules_for_prompt = rules_for_prompt
@@ -22,6 +25,9 @@ class ModelValidation:
 
     return False
 
+  def append_instructions(self, instructions: list[str]):
+    self._rules_for_prompt.extend(instructions)
+
   @staticmethod
   def valid():
-    return ModelValidation(None, None)
+    return ModelValidationInstructions(None, None)

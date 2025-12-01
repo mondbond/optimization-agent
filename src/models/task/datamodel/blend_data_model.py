@@ -1,12 +1,9 @@
 from typing import ClassVar
 
-from models.model_validation import ModelValidation
+from models.model_validation import ModelValidationInstructions
 from models.task.datamodel.abstract_data_model import AbstractDataModel
-from models.task.datamodel.dataitem.data_item import AbstractDataItem
 from models.task.datamodel.dataitem.float_value_matrix_data_item import \
   FloatValueMatrixDataItem
-# from models.task.datamodel.dataitem.float_value_matrix_data_item import \
-#   FloatValueMatrixDataItem
 from models.task.datamodel.dataitem.map_data_item import \
   MapWithFloatValueDataItem
 from models.task.datamodel.dataitem.string_data_item import StringDataItem
@@ -14,10 +11,17 @@ from models.task.datamodel.dataitem.string_list_data_item import \
   StringListDataItem
 
 
-# from models.task.datamodel.dataitem.string_data_item import StringDataItem
-
-
 class BlendDataModel(AbstractDataModel):
+  """
+  Data model handler for blending optimization tasks.
+  Manages data related to materials, compositions, costs, and the objective function.
+  1. MATERIAL_TO_COST: Map of materials and their procurement costs.
+  2. COMPOSITIONS: List of available compositions.
+  3. MATERIAL_TO_COMPOSITIONS_COST: Matrix of costs for using compositions in materials.
+  4. PRODUCTS_COMPOSITIONS: Map of compositions and their demand percentages for new products.
+  5. OBJECTIVE_FUNCTION: String indicating whether to minimize or maximize the objective function
+  """
+
   MATERIAL_TO_COST: ClassVar[str] = "material_to_cost"
   COMPOSITIONS: ClassVar[str] = "composition"
   MATERIAL_TO_COMPOSITIONS_COST: ClassVar[str] = "material_to_compositions_cost"
@@ -59,90 +63,63 @@ class BlendDataModel(AbstractDataModel):
   def get_model_summary(self) -> str:
     text: str = "Here is the summary of the current data model state:\n"
 
-    text += f"Material to Cost:\n"
+    text += "Material to Cost:\n"
     material_to_cost = self._data_map.get(self.MATERIAL_TO_COST)
     for material, cost in material_to_cost.data.items():
       text += f"- Material: {material}, Cost per unit: {cost}\n"
 
-    text += f"Compositions:\n"
+    text += "Compositions:\n"
     compositions = self._data_map.get(self.COMPOSITIONS)
     for composition in compositions.data:
       text += f"- Composition: {composition}\n"
 
-    text += f"Material to Compositions Cost:\n"
+    text += "Material to Compositions Cost:\n"
     material_to_compositions_cost = self._data_map.get(
       self.MATERIAL_TO_COMPOSITIONS_COST)
     for material, compositions in material_to_compositions_cost.data.items():
       for composition, cost in compositions.items():
         text += f"- Material: {material}, Composition: {composition}, Cost: {cost}\n"
 
-    text += f"Composition to Demands:\n"
+    text += "Composition to Demands:\n"
     composition_to_demands = self._data_map.get(self.PRODUCTS_COMPOSITIONS)
     for composition, demand in composition_to_demands.data.items():
       text += f"- Composition: {composition}, Demand Percentage: {demand}\n"
 
     return text
 
-  def get_objective_function(self) -> str | None:
-    return "minimize"
 
-  def validate_model_with_text_response(self) -> ModelValidation:
+  def validate_model_with_instruction(self) -> ModelValidationInstructions:
     materials = self._data_map.get(self.MATERIAL_TO_COST)
     compositions = self._data_map.get(self.COMPOSITIONS)
+
 
     material_to_compositions = self._data_map.get(
       self.MATERIAL_TO_COMPOSITIONS_COST)
     composition_to_demands = self._data_map.get(self.PRODUCTS_COMPOSITIONS)
 
-    # material
-    if len(materials.data) == 0:
-      return ModelValidation(["At least one material must be provided."], None)
-
-    materials_rules = self._get_empty_validation_rules(materials,
-                                                       "User need to provide cost for material.")
-    if len(materials_rules) > 0:
-      return ModelValidation(materials_rules, None)
-
-    # composition
-    if len(compositions.data) == 0:
-      return ModelValidation(["At least one composition must be provided."],
-                             None)
-
-    # material to composition matrix
-    if len(material_to_compositions.data) == 0:
-      return ModelValidation(
-          ["Now user must specify all compositions for each material."], None)
-
-    materials_to_composition_rules = self._get_materials_to_composition(
-        material_to_composition=material_to_compositions,
-        materials=materials,
-        compositions=compositions
-    )
-    if len(materials_to_composition_rules) > 0:
-      return ModelValidation(materials_to_composition_rules, None)
-
-    if len(composition_to_demands.data) == 0:
-      return ModelValidation(
-          ["Now user need to provide percentage of each composition in a new product."],
-          None)
-
-    composition_to_demands_rules = self._get_empty_validation_rules(
-      composition_to_demands,
-      "User need to provide demand in a new product for composition .")
-    if len(composition_to_demands_rules) > 0:
-      return ModelValidation(composition_to_demands_rules, None)
-
     objective_function = self._data_map.get(self.OBJECTIVE_FUNCTION).data
-    if not objective_function:
-      return ModelValidation(
-          ["Objective function need to be defined. User must select if he want to minimize or maximize."],
-          None)
 
-    if objective_function.lower() not in ['minimize', 'maximize']:
-      return ModelValidation(None,
-                             [f"Objective function value {objective_function} is not valid. It must be either minimize or maximize."])
+    instructions_model = ModelValidationInstructions(None, None)
 
-    return ModelValidation(None, None)
+    instructions_model.append_instructions(self.__validate_materials(materials))
+    if not instructions_model.is_valid:
+      return instructions_model
+
+    instructions_model.append_instructions(self.__validate_compositions(compositions))
+    if not instructions_model.is_valid:
+      return instructions_model
+
+    instructions_model.append_instructions(self.__validate_materials_to_compositions(material_to_compositions, materials, compositions))
+    if not instructions_model.is_valid:
+      return instructions_model
+
+    instructions_model.append_instructions(self.__validate_compositions_to_demands(composition_to_demands))
+    if not instructions_model.is_valid:
+      return instructions_model
+
+    instructions_model.append_instructions(self.__validate_objective_function(objective_function))
+
+    return instructions_model
 
   def to_mcp_dict(self) -> dict:
     return {
@@ -156,32 +133,80 @@ class BlendDataModel(AbstractDataModel):
       }
     }
 
+
+
+
+  def __validate_materials(self, materials) -> list[str]:
+    if len(materials.data) == 0:
+      return ["At least one material must be provided."]
+
+    return self._get_empty_validation_instructions(materials,
+                                                              "User need to provide cost for material.")
+
   @staticmethod
-  def _get_materials_to_composition(material_to_composition: AbstractDataItem,
-      materials: AbstractDataItem,
-      compositions: AbstractDataItem
+  def __validate_compositions(compositions) -> list[str]:
+    if len(compositions.data) == 0:
+      return ["At least one composition must be provided."]
+
+    return []
+
+  def __validate_materials_to_compositions(self, material_to_compositions,
+      materials,
+      compositions) -> list[str]:
+    if len(material_to_compositions.data) == 0:
+      return ["Now user must specify all compositions for each material."]
+
+    return self.__get_materials_to_composition_instructions(
+        material_to_composition=material_to_compositions,
+        materials=materials,
+        compositions=compositions
+    )
+
+  def __validate_compositions_to_demands(self, composition_to_demands) -> list[str]:
+    if len(composition_to_demands.data) == 0:
+      return ["Now user need to provide percentage of each composition in a new product."]
+
+    return self._get_empty_validation_instructions(
+        composition_to_demands,
+        "User need to provide demand in a new product for composition .")
+
+  def __validate_objective_function(self, objective_function) -> list[str]:
+    if not objective_function:
+      return ["Objective function need to be defined. User must select if he want to minimize or maximize."]
+
+    if objective_function.lower() not in ['minimize', 'maximize']:
+      return [f"Objective function value {objective_function} is not valid. It must be either minimize or maximize."]
+
+    return []
+
+
+
+  @staticmethod
+  def __get_materials_to_composition_instructions(material_to_composition,
+      materials,
+      compositions
   ) -> list[str] | None:
 
-    rules = []
+    instructions = []
 
     materials_list = list(materials.data.keys())
     composition_list = compositions.data
 
     for material in materials_list:
       if material not in material_to_composition.data.keys():
-        rules.append(f"All compositions for {material} need to be given")
+        instructions.append(f"All compositions for {material} need to be given")
         continue
 
       compositon_to_values = material_to_composition.data[material]
 
       for composition in composition_list:
         if composition not in compositon_to_values.keys():
-          rules.append(
+          instructions.append(
             f"Composition {composition} for {material} need to be provided")
           continue
         if not compositon_to_values[composition] or compositon_to_values[
           composition] <= 0:
-          rules.append(
+          instructions.append(
             f"Composition {composition} for {material} need to be a valid value greater than zero")
 
-    return rules
+    return instructions

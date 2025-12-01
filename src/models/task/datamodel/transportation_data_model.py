@@ -1,34 +1,30 @@
-import asyncio
 from typing import ClassVar
-
-from langchain_mcp_adapters.client import MultiServerMCPClient
-
-from models.model_validation import ModelValidation
+from models.model_validation import ModelValidationInstructions
 from models.task.datamodel.abstract_data_model import AbstractDataModel
-from models.task.datamodel.dataitem.data_item import AbstractDataItem
 from models.task.datamodel.dataitem.float_value_matrix_data_item import \
   FloatValueMatrixDataItem
-# from models.task.datamodel.dataitem.float_value_matrix_data_item import \
-#   FloatValueMatrixDataItem
 from models.task.datamodel.dataitem.map_data_item import \
   MapWithFloatValueDataItem
 from models.task.datamodel.dataitem.string_data_item import StringDataItem
 
 
-# from models.task.datamodel.dataitem.string_data_item import StringDataItem
-
-
 class TransportationDataModel(AbstractDataModel):
-  # todo why classVar
+  """
+  Data model handler for transportation optimization tasks.
+  Manages data related to suppliers, consumers, transportation costs, and the objective function.
+  1. SUPPLIER_AVAILABILITY: Map of suppliers and their available supply.
+  2. CONSUMER_NEEDS: Map of consumers and their required needs.
+  3. SUPPLIER_TO_CONSUMER: Matrix of transportation costs from suppliers to consumers.
+  4. OBJECTIVE_FUNCTION: String indicating whether to minimize or maximize the objective function
+  """
+
   SUPPLIER_AVAILABILITY: ClassVar[str] = "supplier_availability"
   CONSUMER_NEEDS: ClassVar[str] = "consumer_needs"
   SUPPLIER_TO_CONSUMER: ClassVar[str] = "supplier_to_consumer"
   OBJECTIVE_FUNCTION: ClassVar[str] = "objective_function"
 
-  # why not use __init__
   @classmethod
   def create(cls):
-
     data = [
       MapWithFloatValueDataItem(
           data_name=cls.SUPPLIER_AVAILABILITY,
@@ -60,55 +56,33 @@ user: The cost of transportation from Brothers company to Grandma Icecream is 23
 
     return cls(data_items=data)
 
-  def validate_model_with_text_response(self) -> ModelValidation | None:
-    # explain the order of validation is important in comment
-
+  def validate_model_with_instruction(
+      self) -> ModelValidationInstructions | None:
     suppliers = self._data_map.get(self.SUPPLIER_AVAILABILITY)
     providers = self._data_map.get(self.CONSUMER_NEEDS)
     supplier_to_providers = self._data_map.get(self.SUPPLIER_TO_CONSUMER)
-
-    if len(suppliers.data) == 0:
-      return ModelValidation(
-          ["List of suppliers need to be provided first. At leas one suppler need to be provided"],
-          None)
-
-    suppliers_rules = self._get_empty_validation_rules(suppliers,
-                                                       "User need to provide amount of items for supplier")
-    if len(suppliers_rules) > 0:
-      return ModelValidation(suppliers_rules, None)
-
-    if len(providers.data) == 0:
-      return ModelValidation(
-          ["List of consumers need to be provided first. At leas one consumer need to be provided"],
-          None)
-
-    providers_rules = self._get_empty_validation_rules(providers,
-                                                       "Amount of items need to be consumed for consumer")
-    if len(providers_rules) > 0:
-      return ModelValidation(providers_rules, None)
-
-    if len(supplier_to_providers.data) == 0:
-      return ModelValidation(
-          ["Now cost of relation from each supplier to provider need to be provided"],
-          None)
-
-    supplier_to_providers_rules = self._get_supplier_to_provider_cost_rules(
-      supplier_to_providers, suppliers, providers)
-    if len(supplier_to_providers_rules) > 0:
-      return ModelValidation(None, supplier_to_providers_rules)
-
     objective_function = self._data_map.get(self.OBJECTIVE_FUNCTION).data
-    if not objective_function:
-      return ModelValidation(
-          ["Objective function need to be defined. User must select if he want to minimize or maximize."],
-          None)
 
-    if objective_function.lower() not in ['minimize', 'maximize']:
-      return ModelValidation(
-          [f"Objective function value {objective_function} is not valid. It must be either minimize or maximize."],
-          None)
+    instruction_model = ModelValidationInstructions(None, None)
 
-    return ModelValidation(None, None)
+    instruction_model.append_instructions(self.__validate_suppliers(suppliers))
+    if not instruction_model.is_valid:
+      return instruction_model
+
+    instruction_model.append_instructions(self.__validate_providers(providers))
+    if not instruction_model.is_valid:
+      return instruction_model
+
+    instruction_model.append_instructions(
+      self.__validate_supplier_to_providers_cost(supplier_to_providers,
+                                                 suppliers, providers))
+    if not instruction_model.is_valid:
+      return instruction_model
+
+    instruction_model.append_instructions(
+      self.__validate_objective_function(objective_function))
+
+    return instruction_model
 
   def get_model_summary(self) -> str:
     text: str = "Here is the summary of transportation model:\n"
@@ -131,38 +105,6 @@ user: The cost of transportation from Brothers company to Grandma Icecream is 23
 
     return text
 
-  @staticmethod
-  def _get_supplier_to_provider_cost_rules(
-      supplier_to_provider: AbstractDataItem,
-      suppliers: AbstractDataItem,
-      providers: AbstractDataItem
-  ) -> list[str] | None:
-
-    rules = []
-
-    suppliers_list = suppliers.data.keys()
-    providers_list = providers.data.keys()
-
-    for supplier in suppliers_list:
-      if supplier not in supplier_to_provider.data:
-        rules.append(
-          f"Connection cost between supplier {supplier} and providers need to be given")
-        continue
-
-      providers_of_supplier = supplier_to_provider.data[supplier]
-
-      for provider in providers_list:
-        if provider not in providers_of_supplier:
-          rules.append(
-            f"Cost from supplier {supplier} to provider {provider} need to be given")
-          continue
-        if not providers_of_supplier[provider] or providers_of_supplier[
-          provider] <= 0:
-          rules.append(
-            f"Connection cost between supplier {supplier} and provider {provider} has no value")
-
-    return rules
-
   def to_mcp_dict(self) -> dict:
     return {
       "linear_transportation_task": {
@@ -175,54 +117,72 @@ user: The cost of transportation from Brothers company to Grandma Icecream is 23
     }
 
 
-if __name__ == "__main__":
-  model = TransportationDataModel.create()
 
-  model.update_data(TransportationDataModel.SUPPLIER_AVAILABILITY, "A", 700)
-  model.update_data(TransportationDataModel.SUPPLIER_AVAILABILITY, "B", 1100)
+  def __validate_suppliers(self, suppliers) -> list[str]:
+    if len(suppliers.data) == 0:
+      return [
+        "List of suppliers need to be provided first. At leas one suppler need to be provided"]
 
-  model.update_data(TransportationDataModel.CONSUMER_NEEDS, "X", 150)
-  model.update_data(TransportationDataModel.CONSUMER_NEEDS, "Y", 400)
+    return self._get_empty_validation_instructions(suppliers,
+                                                   "User need to provide amount of items for supplier")
 
-  model.update_data(TransportationDataModel.SUPPLIER_TO_CONSUMER, key="A",
-                    key2="X", value=4)
-  model.update_data(TransportationDataModel.SUPPLIER_TO_CONSUMER, key="A",
-                    key2="Y", value=3)
-  model.update_data(TransportationDataModel.SUPPLIER_TO_CONSUMER, key="B",
-                    key2="X", value=12)
-  model.update_data(TransportationDataModel.SUPPLIER_TO_CONSUMER, key="B",
-                    key2="Y", value=1)
+  def __validate_providers(self, providers) -> list[str]:
+    if len(providers.data) == 0:
+      return [
+        "List of consumers need to be provided first. At leas one consumer need to be provided"]
 
-  validation = model.validate_model_with_text_response()
+    return self._get_empty_validation_instructions(providers,
+                                                   "Amount of items need to be consumed for consumer")
 
-  print(validation.is_valid)
-  print(validation.rules_for_prompt)
-  print(validation.rules_for_injections)
+  def __validate_supplier_to_providers_cost(self, supplier_to_providers,
+      suppliers, providers) -> list[str]:
+    if len(supplier_to_providers.data) == 0:
+      return [
+        "Now cost of relation from each supplier to provider need to be provided"]
 
-  tool_dict = model.to_mcp_dict()
+    return self.__get_supplier_to_provider_cost_instructions(
+        supplier_to_providers, suppliers, providers)
 
-  mcp_url = "http://0.0.0.0:8777/mcp"
+  @staticmethod
+  def __validate_objective_function(objective_function) -> list[str]:
+    if not objective_function:
+      return [
+        "Objective function need to be defined. User must select if he want to minimize or maximize."]
 
-  mcp_client = None
+    if objective_function.lower() not in ['minimize', 'maximize']:
+      return [
+        f"Objective function value {objective_function} is not valid. It must be either minimize or maximize."]
 
-  # http://mond_mcp:8887/mcp
-  if mcp_url is not None and mcp_url != "":
-    mcp_client = MultiServerMCPClient(
-        {
-          "optimizator_mcp": {
-            "transport": "streamable_http",
-            "url": mcp_url,
-          }
-        }
-    )
+    return []
 
+  @staticmethod
+  def __get_supplier_to_provider_cost_instructions(
+      supplier_to_provider,
+      suppliers,
+      providers
+  ) -> list[str] | None:
 
-  async def main():
-    tools = await mcp_client.get_tools()
-    print(tools)
+    instructions = []
 
-    result = await tools[0].coroutine(**tool_dict)
-    print(result)
+    suppliers_list = suppliers.data.keys()
+    providers_list = providers.data.keys()
 
+    for supplier in suppliers_list:
+      if supplier not in supplier_to_provider.data:
+        instructions.append(
+            f"Connection cost between supplier {supplier} and providers need to be given")
+        continue
 
-  asyncio.run(main())
+      providers_of_supplier = supplier_to_provider.data[supplier]
+
+      for provider in providers_list:
+        if provider not in providers_of_supplier:
+          instructions.append(
+              f"Cost from supplier {supplier} to provider {provider} need to be given")
+          continue
+        if not providers_of_supplier[provider] or providers_of_supplier[
+          provider] <= 0:
+          instructions.append(
+              f"Connection cost between supplier {supplier} and provider {provider} has no value")
+
+    return instructions

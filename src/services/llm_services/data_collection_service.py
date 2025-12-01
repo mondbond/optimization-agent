@@ -2,7 +2,7 @@ from langchain_core.messages import HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
 
 from llm.llm_provider import get_llm
-from models.model_validation import ModelValidation
+from models.model_validation import ModelValidationInstructions
 from models.task.datamodel.transportation_data_model import \
   TransportationDataModel
 from services.history_limitation_service import HistoryLimitationService
@@ -16,7 +16,7 @@ class RespondUserWithErrorsService:
   """
 
   @staticmethod
-  def invoke(history, model_validation: ModelValidation):
+  def invoke(history, model_validation: ModelValidationInstructions):
     history = HistoryLimitationService.dialog_turn_limiter(history,
                                                            max_turns=settings.HISTORY_CONTEXT_MULTIPLIER * 5)
     help_answer_prompt = prompt_manager.get_prompt('data_collecting')
@@ -57,7 +57,7 @@ if __name__ == "__main__":
   model.update_data(TransportationDataModel.SUPPLIER_TO_CONSUMER, key="A",
                     key2="X", value=4)
 
-  validation = model.validate_model_with_text_response()
+  validation = model.validate_model_with_instruction()
 
   print(validation.is_valid)
   print(validation.rules_for_prompt)
