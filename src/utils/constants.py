@@ -4,4 +4,4 @@ from models.task.transportation_optimization_task import \
   TransportationOptimizationTask
 
 REGISTERED_TASKS = [NotDefinedOptimizationTask, BlendOptimizationTask,
-                     TransportationOptimizationTask]
+                    TransportationOptimizationTask]

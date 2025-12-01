@@ -23,7 +23,8 @@ web_app = FastAPI(title="Optimizer-agent", debug=True)
 @web_app.post("/chat")
 async def chat_endpoint(request: UserMessage) -> dict:
 
-  response = await optimization_agent.run({request.message})
+  config = {'thread_id': 'default_thread'}
+  response = await optimization_agent.run({request.message}, config)
 
   return {"reply": response['agent_message']}
 

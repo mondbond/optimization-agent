@@ -1,18 +1,17 @@
-from src.models.task.abstract_optimization_task import AbstractOptimizationTask
 from src.models.enums.optimization_type import OptimizationType
+from src.models.task.abstract_optimization_task import AbstractOptimizationTask
 
 
 class NotDefinedOptimizationTask(AbstractOptimizationTask):
 
-  @classmethod
-  def description(cls):
+  @staticmethod
+  def description():
     return "This optimization type need to be choosen when it is not possible to clearly detect optimization goal. In this case, no specific optimization will be applied."
 
-  @classmethod
+  @staticmethod
   def get_type(cls):
     return OptimizationType.NONE
 
   @staticmethod
   def get_optimization_data_model():
     raise NotImplementedError("Empty type has no task implementation")
-

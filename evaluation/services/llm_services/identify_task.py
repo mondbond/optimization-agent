@@ -2,7 +2,7 @@ import yaml
 import pytest
 from langchain_core.messages import HumanMessage, AIMessage
 from pathlib import Path
-from services.llm_services.task_identification_service import TaskIdentificationService
+from services.llm_services.task_identification_service import TaskExtractionService
 
 def load_test_cases():
 
@@ -27,7 +27,7 @@ def test_identify_task_service(test_case):
   history = convert_history(test_case['history'])
   expected_intent = test_case['expected_optimization_task_type']
 
-  identified_intent = TaskIdentificationService.invoke(history)
+  identified_intent = TaskExtractionService.invoke(history)
 
   assert identified_intent.value == expected_intent
 

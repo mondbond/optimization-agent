@@ -1,8 +1,11 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
-from models.enums.action_type import ActionType
 from models.structured_output.data_extraction_task import DataExtractionAction
 
 
 class ExtractionActionList(BaseModel):
+  """
+  Represents a list of data extraction actions to be performed.
+  """
+
   tasks: list[DataExtractionAction]

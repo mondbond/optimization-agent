@@ -5,7 +5,7 @@ from graph.optimizator.state.optimization_agent_state import \
 
 
 def answer_node(state: OptimizatorAgentState):
-  agent_response = state['agent_message']
+  agent_response = state.get('agent_message')
   state['agent_message'] = None
 
   return {

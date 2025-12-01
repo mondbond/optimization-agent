@@ -1,12 +1,30 @@
+from llm.abstract_llm_provider import AbstractLlmProvider
+from llm.llm_provider_factory import LlmProviderFactory
+from models.enums.llm_purpose import LlmPurpose
 from src.utils.settings import settings
-from langchain_ollama import ChatOllama
-from src.utils.logger import logger
+from functools import lru_cache
 
-def local_ollama_client(temperature=0):
-  return ChatOllama(base_url=settings.LOCAL_OLLAMA_URL, model="mistral:instruct", verbose=True, temperature=temperature)
 
-def get_llm(temperature=0, source = 'default'):
-  if "default" in source:
-    logger.info("llm_provider: using ollama client")
-    return local_ollama_client(temperature)
+@lru_cache(maxsize=34)
+def get_llm(purpose: LlmPurpose = LlmPurpose.DEFAULT, temperature=0):
+  """
+  Get LLM cached clients based on purpose and temperature.
+  :param purpose: f.r. DEFAULT, REASONING, SUMMARY
+  :param temperature:
+  :return: cached LLM client
+  """
 
+  provider_model = None
+
+  if purpose == LlmPurpose.DEFAULT:
+    provider_model = settings.DEFAULT_LLM_SOURCE_MODEL
+  elif purpose == LlmPurpose.REASONING:
+    provider_model = settings.SUMMARIZATION_LLM_SOURCE
+  elif purpose == LlmPurpose.SUMMARY:
+    provider_model = settings.SUMMARY_LLM_SOURCE_MODEL
+
+  provider, model = provider_model.split("/", 1)
+
+  llm_provider: AbstractLlmProvider = LlmProviderFactory.get_provider(provider)
+
+  return llm_provider.get_client(model=model, temperature=temperature)

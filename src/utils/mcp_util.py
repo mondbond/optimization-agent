@@ -1,6 +1,7 @@
 from langchain_mcp_adapters.client import MultiServerMCPClient
 import asyncio
 
+#  todo delete
 def get_mcp_config():
   mcp_config = {
     "servers": [

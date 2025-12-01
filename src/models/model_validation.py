@@ -21,3 +21,7 @@ class ModelValidation:
       return True
 
     return False
+
+  @staticmethod
+  def valid():
+    return ModelValidation(None, None)

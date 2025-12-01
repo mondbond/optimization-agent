@@ -1,17 +1,22 @@
-from models.exceptions.chat_error_exception import ChatErrorException
+from models.exceptions.chat_error_exception import DataPopulationError
 from models.model_validation import ModelValidation
 from models.structured_output.action_extractors import ExtractionActionList
-from models.task.datamodel.abstract_data_model import AbstractDataModel
 
 
-class DataActionExecutor:
+class DataModelPopulationService:
+  """
+    Service responsible for executing data population actions on the optimization data model.
+    In case of data population errors, it captures the exception and returns a ModelValidation
+    object containing the relevant instructions for prompt generation.
+  """
 
-    @staticmethod
-    def execute(action_list : ExtractionActionList, model : AbstractDataModel) -> ModelValidation:
-      try:
-        for action in action_list.tasks:
-            model.update_with_action(action)
-      except ChatErrorException as e:
-        return ModelValidation(rules_for_prompt=[e.get_rule()], rules_for_injections=None)
+  @staticmethod
+  def execute(action_list: ExtractionActionList, model) -> ModelValidation:
+    try:
+      for action in action_list.tasks:
+        model.update_with_action(action)
+    except DataPopulationError as e:
+      return ModelValidation(rules_for_prompt=[e.get_rule()],
+                             rules_for_injections=None)
 
-      return ModelValidation(rules_for_injections=None, rules_for_prompt=None)
+    return ModelValidation(rules_for_injections=None, rules_for_prompt=None)

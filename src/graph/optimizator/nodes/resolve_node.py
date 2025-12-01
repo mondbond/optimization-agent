@@ -1,11 +1,10 @@
 from graph.optimizator.state.optimization_agent_state import \
   OptimizatorAgentState
 from models.enums.optimization_type import OptimizationType
-
 from src.services.mcp_service import optimisation_mcp_service
 
 
-async def resolve_node(state : OptimizatorAgentState):
+async def solve_node(state : OptimizatorAgentState):
     # todo error handling
 
     result = None

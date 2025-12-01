@@ -1,20 +1,21 @@
-from src.services.llm_services.abstract_llm_task_service import \
-  AbstractLlmTaskService
-from langchain_core.messages import HumanMessage, AIMessage, AnyMessage
+from langchain_core.messages import AnyMessage
 from langchain_core.prompts import ChatPromptTemplate
+
 from src.llm.llm_provider import get_llm
-from src.services.history_limitation_service import HistoryLimitationService
-from src.utils.prompt_manager import prompt_manager
 from src.models.structured_output.optimization_task_resolver import \
   OptimizationTaskResolver
+from src.services.history_limitation_service import HistoryLimitationService
 from src.services.task_descriptors_service import TaskDescriptorService
+from src.utils.prompt_manager import prompt_manager
 
 
-class TaskIdentificationService(AbstractLlmTaskService):
+class TaskExtractionService:
+  """
+  LLM Service to extract the optimization task type from user messages.
+  """
 
   @staticmethod
   def invoke(history: list[AnyMessage]):
-
     task_descriptions = TaskDescriptorService.get_task_descriptions_for_prompt()
 
     history = HistoryLimitationService.dialog_turn_limiter(history,

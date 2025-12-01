@@ -3,8 +3,8 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.constants import START, END
 from langgraph.graph import StateGraph
 
-from graph.optimizator.nodes.repeat_node import repeat_node
-from graph.optimizator.nodes.resolve_node import resolve_node
+from graph.optimizator.nodes.confirmation_node import repeat_node
+from graph.optimizator.nodes.resolve_node import solve_node
 from graph.optimizator.nodes.task_intent_node import task_intent_node
 from src.graph.optimizator.state.optimization_agent_state import \
   OptimizatorAgentState
@@ -22,7 +22,7 @@ class OptimizatorAgent:
     graph_builder.add_node("DATA_COLLECTION_NODE", data_collection_node)
     graph_builder.add_node("ANSWER_NODE", answer_node)
     graph_builder.add_node("RE_ASK_NODE", repeat_node)
-    graph_builder.add_node("RESOLVE_NODE", resolve_node)
+    graph_builder.add_node("RESOLVE_NODE", solve_node)
 
     graph_builder.add_edge(START, "TASK_INTENT_NODE")
     graph_builder.add_edge("ANSWER_NODE", END)
@@ -58,7 +58,7 @@ class OptimizatorAgent:
 
     self._graph = graph_builder.compile(checkpointer=memory)
 
-  async def run(self, inputs, config={'thread_id': 'default_thread'}):
+  async def run(self, inputs, config):
     return await self._graph.ainvoke({"history": [HumanMessage(inputs)]},
                               {'thread_id': config['thread_id']})
 

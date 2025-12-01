@@ -1,15 +1,18 @@
+from langchain_core.messages import AnyMessage
+from langchain_core.prompts import ChatPromptTemplate
+
 from models.task.abstract_optimization_task import AbstractOptimizationTask
 from services.task_descriptors_service import TaskDescriptorService
-from src.services.llm_services.abstract_llm_task_service import \
-  AbstractLlmTaskService
-from langchain_core.messages import HumanMessage, AIMessage, AnyMessage
-from langchain_core.prompts import ChatPromptTemplate
 from src.llm.llm_provider import get_llm
 from src.services.history_limitation_service import HistoryLimitationService
 from src.utils.prompt_manager import prompt_manager
 
 
-class HelpToIdentifyTaskService(AbstractLlmTaskService):
+class TaskTypeIdentificationHelpAnswerService:
+  """
+  LLM Service for chatting with user in case the optimization task is not yet defined.
+  Service generate the message for chatting and specifying detail questions to help user define the optimization task.
+  """
 
   @staticmethod
   def invoke(history: list[AnyMessage]):

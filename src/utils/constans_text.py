@@ -1,2 +1,6 @@
+from llm.bedrock_provider import BedrockLlmProvider
+from llm.ollama_provider import OllamaLlmProvider
 
-SUB_CLASS_IMPLEMENTATION_ERROR_MSG = 'This method should be implemented by subclasses.'
+REGISTERED_LLM_PROVIDERS = [
+  BedrockLlmProvider(), OllamaLlmProvider()
+]

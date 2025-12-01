@@ -1,8 +1,12 @@
 from langchain_mcp_adapters.client import MultiServerMCPClient
+
 from src.utils.settings import settings
 
+
 class OptimizationMcpService:
-  '''MCP Service for interacting with Multi-Server MCP Client'''
+  """
+  MCP Service for interacting with Multi-Server MCP Client
+  """
 
   def __init__(self, mcp_url: str, port: str = '8887', ):
     self.mcp_url = mcp_url
@@ -15,7 +19,6 @@ class OptimizationMcpService:
           }
         }
     )
-
 
   async def calculate_transportation(self, transportation_data: dict) -> dict:
     tools = await self.mcp_client.get_tools()
@@ -31,4 +34,6 @@ class OptimizationMcpService:
 
     return await courutine
 
-optimisation_mcp_service = OptimizationMcpService(mcp_url=settings.OPTIMIZATION_MCP_URL, port=settings.OPTIMIZATION_MCP_PORT)
+
+optimisation_mcp_service = OptimizationMcpService(
+  mcp_url=settings.OPTIMIZATION_MCP_URL, port=settings.OPTIMIZATION_MCP_PORT)

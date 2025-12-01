@@ -4,9 +4,14 @@ from src.utils.logger import logger
 class Settings(BaseSettings):
 
 
-  # todo  move to init
   # LOCAL LLM
   LOCAL_OLLAMA_URL : str = "http://localhost:11434"
+
+  # LLM
+  DEFAULT_LLM_SOURCE_MODEL : str = "ollama/mistral:instruct"
+  # DEFAULT_LLM_SOURCE_MODEL : str = "bedrock/anthropic.claude-3-sonnet-20240229-v1:0"
+  SUMMARY_LLM_SOURCE_MODEL : str = "ollama/mistral:instruct"
+  REASONING_LLM_SOURCE_MODEL : str = "ollama/mistral:instruct"
 
   # OPERATIONAL_CONSTANTS
   HISTORY_CONTEXT_MULTIPLIER : int = 1
@@ -25,6 +30,12 @@ class Settings(BaseSettings):
 
   def model_post_init(self, __context):
     logger.info(f"LOCAL_OLLAMA_URL = {self.LOCAL_OLLAMA_URL}")
+
+    logger.info(f"DEFAULT_LLM_SOURCE_MODEL = {self.DEFAULT_LLM_SOURCE_MODEL}")
+    logger.info(f"SUMMARY_LLM_SOURCE_MODEL = {self.SUMMARY_LLM_SOURCE_MODEL}")
+    logger.info(f"REASONING_LLM_SOURCE_MODEL = {self.REASONING_LLM_SOURCE_MODEL}")
+
+
     logger.info(f"HISTORY_CONTEXT_MULTIPLIER = {self.HISTORY_CONTEXT_MULTIPLIER}")
     logger.info(f"LANGSMITH_TRACING = {self.LANGSMITH_TRACING}")
     return super().model_post_init(__context)

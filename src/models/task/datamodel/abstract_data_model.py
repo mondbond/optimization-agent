@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from pydantic import BaseModel, Field
 
 from models.enums.action_type import ActionType
@@ -15,55 +16,53 @@ from models.task.datamodel.dataitem.string_list_data_item import \
 
 
 class AbstractDataModel(ABC, BaseModel):
-  data_items: list[MapWithFloatValueDataItem | StringDataItem | FloatValueMatrixDataItem | StringListDataItem] = Field()
+  data_items: list[
+    MapWithFloatValueDataItem | StringDataItem | FloatValueMatrixDataItem | StringListDataItem] = Field()
 
   def model_post_init(self, __context):
-    self._data_map = {item.data_name : item for item in self.data_items}
+    self._data_map = {item.data_name: item for item in self.data_items}
 
   @classmethod
   @abstractmethod
   def create(cls):
-    raise NotImplementedError
+    pass
 
   @abstractmethod
   def validate_model_with_text_response(self) -> ModelValidation:
-    raise NotImplementedError
+    pass
 
   @abstractmethod
   def get_model_summary(self) -> str:
-    # todo custom
-    raise NotImplementedError
+    pass
 
-
-  def update_data(self, data_item_name : str, key: str, value, key2=None):
+  def update_data(self, data_item_name: str, key: str, value, key2=None):
     if key2:
       self._data_map[data_item_name].update(
-          key1 = key,
-          key2 = key2,
+          key1=key,
+          key2=key2,
           value=value
       )
     else:
       self._data_map[data_item_name].update(
-          key1 = key,
+          key1=key,
           value=value
       )
 
-
   # todo create exceptions and refactor
-  def update_with_action(self, action : DataExtractionAction):
+  def update_with_action(self, action: DataExtractionAction):
     # if not action.key1:
     #   return
 
     if action.action == ActionType.UPDATE:
       if action.key2:
         self._data_map[action.resource].update(
-            key1 = action.key1,
-            key2 = action.key2,
+            key1=action.key1,
+            key2=action.key2,
             value=action.value
         )
       else:
         self._data_map[action.resource].update(
-            key1 = action.key1,
+            key1=action.key1,
             value=action.value)
 
     if action.action == ActionType.REMOVE:
@@ -97,5 +96,3 @@ class AbstractDataModel(ABC, BaseModel):
         rules.append(f"{msg}  {item}")
 
     return rules
-
-
