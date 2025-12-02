@@ -9,7 +9,7 @@ class TransportationOptimizationTask(AbstractOptimizationTask):
 
   @staticmethod
   def prompt_description():
-    return "This optimization type need to be choosen when you can clearly detect entities that supply and entities that can consume from suppliers."
+    return "This optimization type need to be selected when users clearly tal about you can clearly detect entities that supply and consume something, and relation between them."
 
   @staticmethod
   def get_type():

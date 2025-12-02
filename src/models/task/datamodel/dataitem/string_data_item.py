@@ -3,16 +3,17 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 from models.exceptions.chat_error_exception import DataPopulationError
+from models.task.datamodel.dataitem.data_item import AbstractDataItem
 
 
-class StringDataItem(BaseModel):
+class StringDataItem(AbstractDataItem):
   """
   Represents a data item that holds a string value.
   """
 
   STRING_CLASS: str = "StringDataItem"
 
-  data: Any = Field(default='')
+  data: str = Field(default='')
   data_name: str = Field()
   description: str = Field()
   action_examples: str = Field()

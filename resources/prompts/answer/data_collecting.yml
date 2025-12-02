@@ -24,12 +24,24 @@ versions:
       {history}
       
       
-      You are provided with the following validation rules that user data must satisfy in order to resolve the optimization task:
+      You are provided with the following instructions rules that user data must satisfy in order to resolve the optimization task:
       
       {validation_rules}
       
-      You need to tell him about it in polite and friendly manner.
+      You need to tell him about it in polite and friendly manner. Be short and precise, prefer bullet point structure. Prefer making paragrphs for better readability.
+      You answer can not be longer than 40 words.
       
+      Example: 
+      
+      User: I have been in Paris last summer. It was great!
+      Instructions: User need provide missing data for supplier A
+      You:
+      That sounds like a wonderful trip!
+      
+      But let's get back to our optimization task.
+      Please provide the missing data for supplier A.
+      
+    
       Your response is:
       
       

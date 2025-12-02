@@ -3,9 +3,11 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 from models.exceptions.chat_error_exception import DataPopulationError
+from models.task.datamodel.dataitem.data_item import AbstractDataItem
+from typing import Any, Dict
 
 
-class MapWithFloatValueDataItem(BaseModel):
+class MapWithFloatValueDataItem(AbstractDataItem):
   """
   Represents a data item that holds a map (dictionary) of float values.
   Each key in the map is associated with a float number.
@@ -13,7 +15,7 @@ class MapWithFloatValueDataItem(BaseModel):
 
   MAP_WITH_FLOAT: str = "MAP_WITH_FLOAT"
 
-  data: Any = Field(default={})
+  data: Dict[str, float] = Field(default={})
   data_name: str = Field()
   description: str = Field()
   action_examples: str = Field()

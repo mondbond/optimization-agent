@@ -8,8 +8,8 @@ class Settings(BaseSettings):
   LOCAL_OLLAMA_URL : str = "http://localhost:11434"
 
   # LLM
-  DEFAULT_LLM_SOURCE_MODEL : str = "ollama/mistral:instruct"
-  # DEFAULT_LLM_SOURCE_MODEL : str = "bedrock/anthropic.claude-3-sonnet-20240229-v1:0"
+  # DEFAULT_LLM_SOURCE_MODEL : str = "ollama/mistral:instruct"
+  DEFAULT_LLM_SOURCE_MODEL : str = "bedrock/anthropic.claude-3-sonnet-20240229-v1:0"
   SUMMARY_LLM_SOURCE_MODEL : str = "ollama/mistral:instruct"
   REASONING_LLM_SOURCE_MODEL : str = "ollama/mistral:instruct"
 
@@ -21,7 +21,7 @@ class Settings(BaseSettings):
   HISTORY_CONTEXT_MULTIPLIER : int = 1
 
   # LANGSMITH
-  LANGSMITH_TRACING : str = "true"
+  LANGSMITH_TRACING : str = "false"
   LANGSMITH_ENDPOINT : str = "https://api.smith.langchain.com"
   LANGSMITH_API_KEY : str = "none"
   LANGSMITH_PROJECT : str = "default"

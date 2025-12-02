@@ -43,29 +43,86 @@ class TransportationDataModel(AbstractDataModel):
     data = [
       MapWithFloatValueDataItem(
           data_name=cls.SUPPLIER_AVAILABILITY,
-          description='if user talk something about entity that suppose to supply something',
-          action_examples=f'''User: The warehous Brothers company can supply up to 500 items.
-      Result: [(action=UPDATE, resource={cls.SUPPLIER_AVAILABILITY}, key1=Brothers company, value=500)]''',
+          description=
+          '''
+          Use this if user talks about entity that suppose to supply/provide/can produce something in an abstract or specific way. You need to mention supplier name in key1 and the amount of items it can supply in value. If user just mention the supplier without specifying the amount, you can set the value to empty string.
+          ''',
+          action_examples=
+          f"""
+      
+      Example:    
+      User: The warehous Brothers company can supply up to 500 items.
+      Result: [(action=UPDATE, resource={cls.SUPPLIER_AVAILABILITY}, key1=Brothers, value=500)]
+      
+      Example:    
+      User: I have the warehous Brothers company.
+      Result: [(action=UPDATE, resource={cls.SUPPLIER_AVAILABILITY}, key1=Brothers, value='')]
+      
+      Example:
+      User: I have some warehouses.
+      Result: []
+      """,
       ),
       MapWithFloatValueDataItem(
           data_name=cls.CONSUMER_NEEDS,
-          description='if user talk something about entity that suppose to consume something ot act like a consumers',
-          action_examples=f'''
-          User: The Grandma Icecream shop need 200 items
-      Result: [(action=UPDATE, resource={cls.CONSUMER_NEEDS}, key1=Grandma Icecream, value=200)]
+          description=
+          '''
+          Use this If user talk something about entity that suppose to consume something ot act like a consumer.
+          You need to mention consumer name in key1 and the amount of items it consume in value. If user just mention the consumer without specifying the amount, you can set the value to empty string.
+          ''',
+          action_examples=
+          f'''
+      Example:    
+      User: The ice cream shop Magenta need 500 ice creams.
+      Result: [(action=UPDATE, resource={cls.CONSUMER_NEEDS}, key1=Magenta, value=500)]
+      
+      Example:    
+      User: need to be provided to Magenta.
+      Result: [(action=UPDATE, resource={cls.CONSUMER_NEEDS}, key1=Magenta, value='')]
+      
+      Example:
+      User: I have some consumers.
+      Result: []
           '''
       ),
       FloatValueMatrixDataItem(
           data_name=cls.SUPPLIER_TO_CONSUMER,
-          description='if user specify value that explicitly related to one supplier to one consumer. You need to mention supplier in key1 and consumer in key2',
-          action_examples=f'''
-user: The cost of transportation from Brothers company to Grandma Icecream is 2312
-      Result: [(action=UPDATE, resource={cls.SUPPLIER_TO_CONSUMER}, key1=Brothers company, key2=Grandma Icecream  value=500)]
-'''),
+          description=
+          '''
+          Use this if user specify value that explicitly related to one supplier and to one consumer. You need to mention supplier in key1 and consumer in key2, and the value that represent the cost/value in abstract sense from supplier to consumer in value.
+          ''',
+          action_examples=
+          f"""
+      Example:    
+      User: From Brothers to Megenda costs 23.
+      Result: [(action=UPDATE, resource={cls.SUPPLIER_TO_CONSUMER}, key1=Brothers, key2=Magenda, value=23)]
+      
+      Example:
+      User: I have some suppliers to consumers relations.
+      Result: []
+      """
+      ),
       StringDataItem(
           data_name=cls.OBJECTIVE_FUNCTION,
-          description=f"This is the value of  {cls.OBJECTIVE_FUNCTION} with value that represents the objective function of the blending task. The value is either minimize or maximize. It does not require keys.",
-          action_examples=f'action=UPDATE. object={cls.OBJECTIVE_FUNCTION}. value=minimise ot maximize only'
+          description=
+          """
+          Use this when user talk about objective function that he want to achieve. You need to set the value to either "minimize" or "maximize" based on user statement.
+          In this case only resource name and the value is needed.
+          """,
+          action_examples=
+          f'''
+      Example:    
+      User: I want to minimize the cost.
+      Result: [(action=UPDATE, resource={cls.OBJECTIVE_FUNCTION}, value='minimize')]
+      
+      Example:    
+      User: I want to maximize the cost.
+      Result: [(action=UPDATE, resource={cls.OBJECTIVE_FUNCTION}, value='maximize')]
+      
+      Example:    
+      User: I still thinking about objective function.
+      Result: []
+      '''
       ),
     ]
 
@@ -122,7 +179,7 @@ user: The cost of transportation from Brothers company to Grandma Icecream is 23
 
   def to_mcp_dict(self) -> dict:
     return {
-      "linear_transportation_task": {
+      "task": {
         "supplier_to_supply": self._data_map[self.SUPPLIER_AVAILABILITY].data,
         "consumer_to_consume": self._data_map[self.CONSUMER_NEEDS].data,
         "supplier_to_consumer_cost": self._data_map[

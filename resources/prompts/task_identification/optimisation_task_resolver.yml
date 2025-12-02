@@ -21,3 +21,48 @@ versions:
               Based on this information, identify the most suitable optimization task type that aligns with the user's needs. If none of the provided task types are relevant, respond with "none".
           
               Please provide only the name of the optimization task type as your response.
+  - version: 2
+    alias: base
+    description:  optimisation_task_descriptions and history are passed as variables.
+    variables:
+      - name: optimization_task_descriptions
+        description: A string describing possible optimization task types the user can ask for.
+      - name: history
+        description: The history of conversation with the user.
+    template: |
+      You are an expert in understanding user's intent regarding mathematical optimisaton tasks from available.
+      Your goal is to analyze the user's requests and understand the how confident you are that user's needs match one of the provided optimization task types. Also select one of the optimization task types that best matches user's needs if you highly confident in selecting.
+      If you are confident on low or medium level about the match, respond with "none".
+      
+      Example:
+      User: I have some supplers and I want to minimize my costs when ordering from them.
+      It's a medium confidence match.
+      
+      Example:
+      User: I have ice cream shop
+      No match to any optimization task type. Respond with "none".
+      
+      Example:
+      User: I want to maximize my profits from selling products online.
+      It's a high confidence match to "Profit Maximization" task type. Select such if such exist
+      
+      Example:
+      User: Ok. I'm pretty sure it's about X type of optimization.
+      It's a high confidence match for X
+    
+
+      Here are the possible optimization task types:
+      
+        {optimization_task_descriptions}
+      
+      The user has provided the following context and history of conversation:
+      
+        {history}
+      
+      
+      Answer format:
+      Based on this information, identify the most suitable optimization task type that aligns with the user's needs. If none of the provided task types are relevant with a high confidence, respond with "none".
+      
+      Please provide only the name of the optimization task type as your response.
+      
+      You response is:

@@ -3,9 +3,11 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 from models.exceptions.chat_error_exception import DataPopulationError
+from models.task.datamodel.dataitem.data_item import AbstractDataItem
+from typing import Any, Dict
 
 
-class FloatValueMatrixDataItem(BaseModel):
+class FloatValueMatrixDataItem(AbstractDataItem):
   """
   Represents a data item that holds a matrix of float values.
   The matrix is structured as a nested dictionary, where the first-level keys
@@ -15,7 +17,7 @@ class FloatValueMatrixDataItem(BaseModel):
 
   MATRIX_FLOAT_CLASS: str = "FloatValueMatrixDataItem"
 
-  data: Any = Field(default={})
+  data: Dict[str, Dict[str, float]] = Field(default={})
   data_name: str = Field()
   description: str = Field()
   action_examples: str = Field()

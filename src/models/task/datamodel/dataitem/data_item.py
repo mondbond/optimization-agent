@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Dict
 
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 
-class AbstractDataItem(ABC):
-  data: Any = Field(default=None)
+class AbstractDataItem(ABC, BaseModel):
+  # data: Any = Field(default=None)
   data_name: str = Field()
   description: str = Field()
   action_examples: str = Field()

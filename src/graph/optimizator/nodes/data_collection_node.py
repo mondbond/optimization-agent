@@ -38,12 +38,12 @@ def data_collection_node(state: OptimizatorAgentState):
   logger.info(f"Extracted actions: {action_list.tasks}")
 
   if is_user_wants_to_delete_all_data(action_list):
-    clear_task_related_data(state)
+    # clear_task_related_data(state)
     return {
       'route': 'answer',
       'agent_message': "All data has been deleted. Let's start over.",
-      'optimization_data_model': state['optimization_data_model'],
-      'optimization_task_type': state['optimization_task_type']
+      'optimization_data_model': None,
+      'optimization_task_type': None
     }
 
   instructions: ModelValidationInstructions = populate_and_validate_data_model(state,
@@ -105,8 +105,8 @@ def get_data_model(type: OptimizationType):
 
 
 def is_user_wants_to_delete_all_data(action_list: ExtractionActionList):
-  for action in action_list.tasks:
-    if action == ActionType.DELETE_ALL:
+  for extracted_action in action_list.tasks:
+    if extracted_action.action == ActionType.DELETE_ALL:
       logger.info("User requested to delete all data.")
       return True
   return False
