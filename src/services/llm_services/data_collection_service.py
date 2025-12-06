@@ -19,7 +19,7 @@ class RespondUserWithErrorsService:
   def invoke(history, model_validation: ModelValidationInstructions):
     history = HistoryLimitationService.dialog_turn_limiter(history,
                                                            max_turns=settings.HISTORY_CONTEXT_MULTIPLIER * 3)
-    help_answer_prompt = prompt_manager.get_prompt('data_collecting')
+    help_answer_prompt = prompt_manager['data_collecting']
 
     llm = get_llm()
 

@@ -1,0 +1,6 @@
+name: provide_suppliers_amount
+versions:
+  - version: 1
+    alias: base
+    template: |
+      User need to provide amount of items for supplier (or supply entity) 

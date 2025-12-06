@@ -6,17 +6,47 @@ from models.task.datamodel.dataitem.float_value_matrix_data_item import \
 from models.task.datamodel.dataitem.map_data_item import \
   MapWithFloatValueDataItem
 from models.task.datamodel.dataitem.string_data_item import StringDataItem
+from utils import string_manager
 
 
 class TransportationDataModel(AbstractDataModel):
   """
   Data model handler for transportation optimization tasks.
   Manages data related to suppliers, consumers, transportation costs, and the objective function.
+
   1. SUPPLIER_AVAILABILITY: Map of suppliers and their available supply.
   2. CONSUMER_NEEDS: Map of consumers and their required needs.
   3. SUPPLIER_TO_CONSUMER: Matrix of transportation costs from suppliers to consumers.
   4. OBJECTIVE_FUNCTION: String indicating whether to minimize or maximize the objective function
   """
+
+  SUPPLIER_AVAILABILITY: ClassVar[str] = "supplier_availability"
+  CONSUMER_NEEDS: ClassVar[str] = "consumer_needs"
+  SUPPLIER_TO_CONSUMER: ClassVar[str] = "supplier_to_consumer"
+  OBJECTIVE_FUNCTION: ClassVar[str] = "objective_function"
+
+  @classmethod
+  def create(cls):
+    data = [
+      MapWithFloatValueDataItem(
+          data_name=cls.SUPPLIER_AVAILABILITY,
+          description=string_manager.get('sup_availability_description'),
+          action_examples=string_manager.get('sup_availability_example', resource_name=cls.SUPPLIER_AVAILABILITY)),
+      MapWithFloatValueDataItem(
+          data_name=cls.CONSUMER_NEEDS,
+          description=string_manager.get('consumer_needs_description'),
+          action_examples=string_manager.get('consumer_needs_example', resource_name=cls.CONSUMER_NEEDS)),
+      FloatValueMatrixDataItem(
+          data_name=cls.SUPPLIER_TO_CONSUMER,
+          description=string_manager.get('supplier_to_consumer_description'),
+          action_examples=string_manager.get('supplier_to_consumer_example', resource_name=cls.SUPPLIER_TO_CONSUMER)),
+      StringDataItem(
+          data_name=cls.OBJECTIVE_FUNCTION,
+          description=string_manager.get('objective_function_description'),
+          action_examples=string_manager.get('objective_function_example', resource_name=cls.OBJECTIVE_FUNCTION,)),
+    ]
+
+    return cls(data_items=data)
 
   def already_existed_entities(self) -> str:
     if len(self._data_map.get(self.SUPPLIER_AVAILABILITY).data.keys()) == 0:
@@ -33,103 +63,24 @@ class TransportationDataModel(AbstractDataModel):
 
     return text
 
-  SUPPLIER_AVAILABILITY: ClassVar[str] = "supplier_availability"
-  CONSUMER_NEEDS: ClassVar[str] = "consumer_needs"
-  SUPPLIER_TO_CONSUMER: ClassVar[str] = "supplier_to_consumer"
-  OBJECTIVE_FUNCTION: ClassVar[str] = "objective_function"
-
-  @classmethod
-  def create(cls):
-    data = [
-      MapWithFloatValueDataItem(
-          data_name=cls.SUPPLIER_AVAILABILITY,
-          description=
-          '''
-          Use this if user talks about entity that suppose to supply/provide/can produce something in an abstract or specific way. You need to mention supplier name in key1 and the amount of items it can supply in value. If user just mention the supplier without specifying the amount, you can set the value to empty string.
-          ''',
-          action_examples=
-          f"""
-      
-      Example:    
-      User: The warehous Brothers company can supply up to 500 items.
-      Result: [(action=UPDATE, resource={cls.SUPPLIER_AVAILABILITY}, key1=Brothers, value=500)]
-      
-      Example:    
-      User: I have the warehous Brothers company.
-      Result: [(action=UPDATE, resource={cls.SUPPLIER_AVAILABILITY}, key1=Brothers, value='')]
-      
-      Example:
-      User: I have some warehouses.
-      Result: []
-      """,
-      ),
-      MapWithFloatValueDataItem(
-          data_name=cls.CONSUMER_NEEDS,
-          description=
-          '''
-          Use this If user talk something about entity that suppose to consume something ot act like a consumer.
-          You need to mention consumer name in key1 and the amount of items it consume in value. If user just mention the consumer without specifying the amount, you can set the value to empty string.
-          ''',
-          action_examples=
-          f'''
-      Example:    
-      User: The ice cream shop Magenta need 500 ice creams.
-      Result: [(action=UPDATE, resource={cls.CONSUMER_NEEDS}, key1=Magenta, value=500)]
-      
-      Example:    
-      User: need to be provided to Magenta.
-      Result: [(action=UPDATE, resource={cls.CONSUMER_NEEDS}, key1=Magenta, value='')]
-      
-      Example:
-      User: I have some consumers.
-      Result: []
-          '''
-      ),
-      FloatValueMatrixDataItem(
-          data_name=cls.SUPPLIER_TO_CONSUMER,
-          description=
-          '''
-          Use this if user specify value that explicitly related to one supplier and to one consumer. You need to mention supplier in key1 and consumer in key2, and the value that represent the cost/value in abstract sense from supplier to consumer in value.
-          ''',
-          action_examples=
-          f"""
-      Example:    
-      User: From Brothers to Megenda costs 23.
-      Result: [(action=UPDATE, resource={cls.SUPPLIER_TO_CONSUMER}, key1=Brothers, key2=Magenda, value=23)]
-      
-      Example:
-      User: I have some suppliers to consumers relations.
-      Result: []
-      """
-      ),
-      StringDataItem(
-          data_name=cls.OBJECTIVE_FUNCTION,
-          description=
-          """
-          Use this when user talk about objective function that he want to achieve. You need to set the value to either "minimize" or "maximize" based on user statement.
-          In this case only resource name and the value is needed.
-          """,
-          action_examples=
-          f'''
-      Example:    
-      User: I want to minimize the cost.
-      Result: [(action=UPDATE, resource={cls.OBJECTIVE_FUNCTION}, value='minimize')]
-      
-      Example:    
-      User: I want to maximize the cost.
-      Result: [(action=UPDATE, resource={cls.OBJECTIVE_FUNCTION}, value='maximize')]
-      
-      Example:    
-      User: I still thinking about objective function.
-      Result: []
-      '''
-      ),
-    ]
-
-    return cls(data_items=data)
 
   def validate_model_with_instruction(
       self) -> ModelValidationInstructions | None:
+    """
+    Method validates the transportation data model and return validation instructions in specified order so
+    missing data can be collected step by step.
+
+    Current validation steps:
+    1. Validate suppliers exists.
+    2. Validate suppliers supply amount exist.
+    3. Validate consumers exists.
+    4. Validate consumers need amount exist.
+    5. Validate cost from each supplier to each consumer exist and is valid.
+    6. Validate objective function is defined and valid.
+
+    :return: Method returns instruction objects with instructions for each validation step that need to be consumed during dynamic prompting.
+    """
+
     suppliers = self._data_map.get(self.SUPPLIER_AVAILABILITY)
     providers = self._data_map.get(self.CONSUMER_NEEDS)
     supplier_to_providers = self._data_map.get(self.SUPPLIER_TO_CONSUMER)
@@ -177,40 +128,24 @@ class TransportationDataModel(AbstractDataModel):
 
     return text
 
-  def to_mcp_dict(self) -> dict:
-    return {
-      "task": {
-        "supplier_to_supply": self._data_map[self.SUPPLIER_AVAILABILITY].data,
-        "consumer_to_consume": self._data_map[self.CONSUMER_NEEDS].data,
-        "supplier_to_consumer_cost": self._data_map[
-          self.SUPPLIER_TO_CONSUMER].data,
-        "objective_function": self._data_map[self.OBJECTIVE_FUNCTION].data
-      }
-    }
-
 
 
   def __validate_suppliers(self, suppliers) -> list[str]:
     if len(suppliers.data) == 0:
-      return [
-        "List of suppliers need to be provided first. At leas one suppler need to be provided"]
+      return [string_manager.get('provide_suppliers')]
 
     return self._get_empty_validation_instructions(suppliers,
-                                                   "User need to provide amount of items for supplier")
+                                                   string_manager.get('provide_suppliers_amount'))
 
   def __validate_providers(self, providers) -> list[str]:
     if len(providers.data) == 0:
-      return [
-        "List of consumers need to be provided first. At leas one consumer need to be provided"]
+      return [string_manager.get('provide_consumers')]
 
     return self._get_empty_validation_instructions(providers,
-                                                   "Amount of items need to be consumed for consumer")
+                  string_manager.get('provide_consumer_needs'))
 
   def __validate_supplier_to_providers_cost(self, supplier_to_providers,
       suppliers, providers) -> list[str]:
-    if len(supplier_to_providers.data) == 0:
-      return [
-        "Now cost of relation from each supplier to provider need to be provided"]
 
     return self.__get_supplier_to_provider_cost_instructions(
         supplier_to_providers, suppliers, providers)
@@ -218,12 +153,10 @@ class TransportationDataModel(AbstractDataModel):
   @staticmethod
   def __validate_objective_function(objective_function) -> list[str]:
     if not objective_function:
-      return [
-        "Objective function need to be defined. User must select if he want to minimize or maximize."]
+      return [string_manager.get('objective_function_instruction')]
 
     if objective_function.lower() not in ['minimize', 'maximize']:
-      return [
-        f"Objective function value {objective_function} is not valid. It must be either minimize or maximize."]
+      return [string_manager.get('objective_function_instruction_wrong')]
 
     return []
 

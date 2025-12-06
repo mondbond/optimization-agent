@@ -1,0 +1,17 @@
+name: consumer_needs_example
+versions:
+  - version: 1
+    alias: base
+    template: |
+      Example:    
+      User: The ice cream shop Magenta need 500 ice creams.
+      Result: [(action=UPDATE, resource={{resource_name}}, key1=Magenta, value=500)]
+      
+      Example:    
+      User: need to be provided to Magenta.
+      Result: [(action=UPDATE, resource={{resource_name}}, key1=Magenta, value='')]
+      
+      Example:
+      User: I have some consumers.
+      Result: []
+      

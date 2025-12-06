@@ -1,0 +1,13 @@
+name: composition_list_examples
+versions:
+  - version: 1
+    alias: base
+    template: |
+      Example:    
+      User: The materials contains fats, bios.
+      Result: [(action=UPDATE, resource={resource_name}, value='fats'),
+      (action=UPDATE, resource={resource_name}, value='bios')]
+
+      Example:
+      User: I have some components of materials.
+      Result: []

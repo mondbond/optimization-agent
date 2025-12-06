@@ -1,0 +1,7 @@
+name: objective_function_description
+versions:
+  - version: 1
+    alias: base
+    template: |
+      Use this when user talk about objective function that he want to achieve. You need to set the value to either "minimize" or "maximize" based on user statement.
+      In this case only resource name and the value is needed.

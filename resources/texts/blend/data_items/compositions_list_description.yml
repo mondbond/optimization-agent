@@ -1,0 +1,7 @@
+name: composition_list_description
+versions:
+  - version: 1
+    alias: base
+    template: |
+      This is a list of compositions/ingredients in abstract meaning can be specified by user. The kay value is always empty and value is always string.
+      Dont do actions here unless user mention new composition.

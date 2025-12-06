@@ -1,0 +1,16 @@
+name: sup_availability_example
+versions:
+  - version: 1
+    alias: base
+    template: |
+      Example:    
+      User: The warehous Brothers company can supply up to 500 items.
+      Result: [(action=UPDATE, resource= {{resource_name}}, key1=Brothers, value=500)]
+
+      Example:    
+      User: I have the warehous Brothers company.
+      Result: [(action=UPDATE, resource={{resource_name}}, key1=Brothers, value='')]
+
+      Example:
+      User: I have some warehouses.
+      Result: []

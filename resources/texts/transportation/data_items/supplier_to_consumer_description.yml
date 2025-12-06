@@ -1,0 +1,7 @@
+name: supplier_to_consumer_description
+versions:
+  - version: 1
+    alias: base
+    template: |
+      Use this if user specify value that explicitly related to one supplier and to one consumer.
+      You need to mention supplier in key1 and consumer in key2, and the value that represent the cost/value in abstract sense from supplier to consumer in value.

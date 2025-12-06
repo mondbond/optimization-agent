@@ -1,0 +1,9 @@
+name: material_to_composition_cost_examples
+versions:
+  - version: 1
+    alias: base
+    template: |
+      Example:    
+      User: In chicken I have 500 fats and 200 bios.
+      Result: [(action=UPDATE, resource={resource_name}, key1=chicken, key2=fats value=500),
+      (action=UPDATE, resource={resource_name}, key1=chicken, key2=bios value=200)]

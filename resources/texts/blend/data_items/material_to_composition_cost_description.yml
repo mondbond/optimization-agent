@@ -1,0 +1,7 @@
+name: material_to_composition_cost_description
+versions:
+  - version: 1
+    alias: base
+    template: |
+      This is a matrix that shows relateions between materials and compositions in abstract meaning can be specified by user.
+      The kay1 is always name of material. key2 is always a composition name and value is always some number.

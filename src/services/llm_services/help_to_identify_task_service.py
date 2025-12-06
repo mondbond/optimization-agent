@@ -20,7 +20,7 @@ class TaskTypeIdentificationHelpAnswerService:
 
     history = HistoryLimitationService.dialog_turn_limiter(history,
                                                            max_turns=10)
-    help_answer_prompt = prompt_manager.get_prompt('task_identification_help')
+    help_answer_prompt = prompt_manager['task_identification_help']
 
     llm = get_llm()
 

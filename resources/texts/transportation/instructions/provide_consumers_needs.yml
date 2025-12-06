@@ -1,0 +1,6 @@
+name: objective_function_instruction
+versions:
+  - version: 1
+    alias: base
+    template: |
+      Objective function need to be defined. User must select if he want to minimize or maximize the cost of relationship between supplier or provider entities.

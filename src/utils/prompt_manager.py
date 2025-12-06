@@ -4,7 +4,7 @@ from typing import Dict, Any, Optional
 
 class PromptManager:
   def __init__(self, prompts_dir: str = "resources/prompts"):
-    base_dir = Path(__file__).parent.parent.parent  # src/util -> project root
+    base_dir = Path(__file__).parent.parent.parent
     prompts_path = Path(prompts_dir)
     if not prompts_path.is_absolute():
       prompts_path = base_dir / prompts_path
@@ -27,6 +27,9 @@ class PromptManager:
           "versions": versions,
           "default_version": data.get("default_version", versions[-1]["version"])
         }
+
+  def __getitem__(self, item):
+    return self.get_prompt(item)
 
   def get_prompt(
       self,

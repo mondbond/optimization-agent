@@ -1,0 +1,16 @@
+name: objective_function_example
+versions:
+  - version: 1
+    alias: base
+    template: |
+      Example:    
+      User: I want to minimize the cost.
+      Result: [(action=UPDATE, resource={{resource_name}}, value='minimize')]
+
+      Example:    
+      User: I want to maximize the cost.
+      Result: [(action=UPDATE, resource={{resource_name}}, value='maximize')]
+
+      Example:    
+      User: I still thinking about objective function.
+      Result: []

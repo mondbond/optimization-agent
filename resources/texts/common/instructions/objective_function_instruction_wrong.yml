@@ -1,0 +1,6 @@
+name: objective_function_instruction_wrong
+versions:
+  - version: 1
+    alias: base
+    template: |
+      Objective function value is not valid. It must be either minimize or maximize exact word.

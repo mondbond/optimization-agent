@@ -1,0 +1,6 @@
+name: empty_compositions
+versions:
+  - version: 1
+    alias: base
+    template: |
+      At least one composition/ingredient of material must be provided.

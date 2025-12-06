@@ -18,7 +18,7 @@ class DataConfirmationService:
   def invoke(history: list[AnyMessage]) -> Confirmation:
     history = HistoryLimitationService.dialog_turn_limiter(history,
                                                            max_turns=settings.HISTORY_CONTEXT_MULTIPLIER * 1)
-    confirmation_prompt = prompt_manager.get_prompt('confirmation')
+    confirmation_prompt = prompt_manager['confirmation']
 
     llm = get_llm().with_structured_output(ConfirmationAction)
 

@@ -1,0 +1,12 @@
+name: product_composition_examples
+versions:
+  - version: 1
+    alias: base
+    template: |
+      Example:    
+      User: In my product I need 500 fats.
+      Result: [(action=UPDATE, resource={resource_name}, key1=fats, value=500)]
+
+      Example:    
+      User: In my product I need 100 bios.
+      Result: [(action=UPDATE, resource={resource_name}, key1=bios, value='100')]

@@ -73,19 +73,26 @@ versions:
       
       Resources:
       Action are done on resources. Here is available resources names:
+      
       {data_model_description}
       
       Value:
       It is any value user want to assign.
       
-      Example:
+      Examples:
       
       {examples}
+      
+      Here is the already existed entities.
+      You can use them to better understand users intent.
+      Use exactly them when user refer to some entity without full name or do a mistype.
+      
+      {already_existed_entities}
   
       Here is the user history you need to analyze:
       
       {history}
-      
+            
       There can be multiple actions. So you need to return a list.
       Return empty list if no evident actions found.
       You actions are:

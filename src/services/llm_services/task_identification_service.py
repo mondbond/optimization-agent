@@ -21,7 +21,7 @@ class TaskExtractionService:
     history = HistoryLimitationService.dialog_turn_limiter(history,
                                                            max_turns=10)
 
-    prompt_text = prompt_manager.get_prompt('optimization_task_resolver')
+    prompt_text = prompt_manager['optimization_task_resolver']
 
     llm = get_llm().with_structured_output(OptimizationTaskResolver)
 

@@ -1,0 +1,8 @@
+name: product_composition_description
+versions:
+  - version: 1
+    alias: base
+    template: |
+      Use ths when user talks about new product it wants to achieve.
+      This is a map that shows what compositions with what amount if it needed in a new product.
+      key1 is always composition name and value is always some number or can be an empty string '' if not specified.

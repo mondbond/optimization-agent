@@ -1,0 +1,16 @@
+name: material_to_cost_examples
+versions:
+  - version: 1
+    alias: base
+    template: |
+      Example:    
+      User: The material chicken cost 100.
+      Result: [(action=UPDATE, resource={resource_name}, key1=chicken, value=1oo)]
+
+      Example:    
+      User: I have the material chicken
+      Result: [(action=UPDATE, resource={resource_name}, key1=chicken, value='')]
+
+      Example:
+      User: I have some materials.
+      Result: []

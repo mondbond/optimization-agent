@@ -9,6 +9,7 @@ from models.task.datamodel.dataitem.map_data_item import \
 from models.task.datamodel.dataitem.string_data_item import StringDataItem
 from models.task.datamodel.dataitem.string_list_data_item import \
   StringListDataItem
+from utils import string_manager
 
 
 class BlendDataModel(AbstractDataModel):
@@ -34,29 +35,28 @@ class BlendDataModel(AbstractDataModel):
     data = [
       MapWithFloatValueDataItem(
           data_name=cls.MATERIAL_TO_COST,
-          description='This is the map for material that need to be procured. The key value is a name of material always a string and the value is cost of procuring one unit of this material',
-          action_examples=f'action=UPDATE. object={cls.MATERIAL_TO_COST}. key=name of the material. value=cost of procuring one unit of this material'
-      ),
+          description=string_manager.get("material_to_cost_description"),
+          action_examples=string_manager.get("material_to_cost_examples", resource_name=cls.MATERIAL_TO_COST)),
+
       StringListDataItem(
           data_name=cls.COMPOSITIONS,
-          description='This is a list of compositions of that can be created. The key value is always empty and value is always string. No need keys here. ONly resource and value',
-          action_examples=f'action=UPDATE. object={cls.COMPOSITIONS}.  value= name of the composition key is empty and key2 is always empty'
-      ),
+          description=string_manager.get("composition_list_description"),
+          action_examples=string_manager.get("composition_list_examples", resource_name=cls.COMPOSITIONS)),
+
       FloatValueMatrixDataItem(
           data_name=cls.MATERIAL_TO_COMPOSITIONS_COST,
-          description='This is a matrix that shows cost of using certain compositions in certain material. Use it when user gives a material and composition and value. The key1 value is a name of material always a string and the key2 is name of composition always a string. The value is cost of using one unit of material in one unit of composition',
-          action_examples=f'action=UPDATE. object={cls.MATERIAL_TO_COMPOSITIONS_COST}. key=name of the material. key2= name of the composition. value= float value of the cost'
-      ),
+          description=string_manager.get("material_to_compositions_cost_description"),
+          action_examples=string_manager.get("material_to_compositions_cost_examples", resource_name=cls.MATERIAL_TO_COMPOSITIONS_COST)),
+
       MapWithFloatValueDataItem(
           data_name=cls.PRODUCTS_COMPOSITIONS,
-          description="This is the map of the composition needed for product and it's percentage of demand that need to be fulfilled. The key is a name of composition always a string and the value. Key and value only needed here.",
-          action_examples=f'action=UPDATE. object={cls.PRODUCTS_COMPOSITIONS}. key=specified composition. ket2= None. value=number specified by user'
-      ),
+          description=string_manager.get("products_compositions_description"),
+          action_examples=string_manager.get("products_compositions_examples", resource_name=cls.PRODUCTS_COMPOSITIONS)),
+
       StringDataItem(
           data_name=cls.OBJECTIVE_FUNCTION,
-          description=f"This is the value of  {cls.OBJECTIVE_FUNCTION} with value that represents the objective function of the blending task. The value is either minimize or maximize. It does not require keys.",
-          action_examples=f'action=UPDATE. object={cls.OBJECTIVE_FUNCTION}. value=minimise ot maximize only'
-      ),
+          description=string_manager.get('objective_function_description'),
+          action_examples=string_manager.get('objective_function_example', resource_name=cls.OBJECTIVE_FUNCTION,)),
     ]
     return cls(data_items=data)
 
@@ -153,7 +153,7 @@ class BlendDataModel(AbstractDataModel):
 
   def __validate_materials(self, materials) -> list[str]:
     if len(materials.data) == 0:
-      return ["At least one material must be provided."]
+      return [string_manager.get("empty_materials")]
 
     return self._get_empty_validation_instructions(materials,
                                                               "User need to provide cost for material.")
@@ -161,15 +161,15 @@ class BlendDataModel(AbstractDataModel):
   @staticmethod
   def __validate_compositions(compositions) -> list[str]:
     if len(compositions.data) == 0:
-      return ["At least one composition must be provided."]
+      return [string_manager.get("empty_compositions")]
 
     return []
 
   def __validate_materials_to_compositions(self, material_to_compositions,
       materials,
       compositions) -> list[str]:
-    if len(material_to_compositions.data) == 0:
-      return ["Now user must specify all compositions for each material."]
+    # if len(material_to_compositions.data) == 0:
+    #   return ["Now user must specify all compositions for each material."]
 
     return self.__get_materials_to_composition_instructions(
         material_to_composition=material_to_compositions,
@@ -178,8 +178,8 @@ class BlendDataModel(AbstractDataModel):
     )
 
   def __validate_compositions_to_demands(self, composition_to_demands) -> list[str]:
-    if len(composition_to_demands.data) == 0:
-      return ["Now user need to provide percentage of each composition in a new product."]
+    # if len(composition_to_demands.data) == 0:
+    #   return ["Now user need to provide percentage of each composition in a new product."]
 
     return self._get_empty_validation_instructions(
         composition_to_demands,

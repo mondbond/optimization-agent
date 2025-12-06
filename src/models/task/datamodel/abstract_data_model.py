@@ -57,14 +57,14 @@ class AbstractDataModel(ABC, BaseModel):
     """
     pass
 
-  @abstractmethod
-  def to_mcp_dict(self) -> dict:
-    """
-    Converts the data model into a dictionary format suitable for MCP solver input.
-    Need to refactor to Adapter pattern in case multiple mcp suporters are added.
-    :return: map of data model suitable for MCP solver input.
-    """
-    pass
+  # @abstractmethod
+  # def to_mcp_dict(self) -> dict:
+  #   """
+  #   Converts the data model into a dictionary format suitable for MCP solver input.
+  #   Need to refactor to Adapter pattern in case multiple mcp suporters are added.
+  #   :return: map of data model suitable for MCP solver input.
+  #   """
+  #   pass
 
   @abstractmethod
   def already_existed_entities(self) -> str:

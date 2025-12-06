@@ -17,6 +17,10 @@ class ModelValidationInstructions:
       self._rules_for_injections = rules_for_injections
 
 
+  def populate(self, model_validation: 'ModelValidationInstructions'):
+    self._rules_for_prompt.extend(model_validation.rules_for_prompt)
+    self._rules_for_injections.extend(model_validation.rules_for_injections)
+
   @property
   def rules_for_prompt(self) -> list[str]:
     return self._rules_for_prompt
@@ -36,5 +40,5 @@ class ModelValidationInstructions:
     self._rules_for_prompt.extend(instructions)
 
   @staticmethod
-  def valid():
+  def create_valid():
     return ModelValidationInstructions(None, None)

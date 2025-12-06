@@ -1,0 +1,12 @@
+name: supplier_to_consumer_example
+versions:
+  - version: 1
+    alias: base
+    template: |
+      Example:    
+      User: From Brothers to Megenda costs 23.
+      Result: [(action=UPDATE, resource={{resource_name}}, key1=Brothers, key2=Magenda, value=23)]
+
+      Example:
+      User: I have some suppliers to consumers relations.
+      Result: []

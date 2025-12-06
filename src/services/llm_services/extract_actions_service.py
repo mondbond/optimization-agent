@@ -17,8 +17,8 @@ class ExtractActionTaskService:
   def invoke(history, data_model: AbstractDataModel, already_existed_entities : str,
       max_turns=1) -> ExtractionActionList:
     history = HistoryLimitationService.dialog_turn_limiter(history,
-                                                           max_turns=settings.HISTORY_CONTEXT_MULTIPLIER * 1)
-    help_answer_prompt = prompt_manager.get_prompt('task_extraction')
+                                                           max_turns=2)
+    help_answer_prompt = prompt_manager['task_extraction']
 
     resource_description = data_model.get_prompt_resource_descriptions()
     examples = data_model.get_prompt_resource_action_examples()

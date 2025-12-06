@@ -1,0 +1,6 @@
+name: provide_sup_to_cons_cost
+versions:
+  - version: 1
+    alias: base
+    template: |
+      List of suppliers (or entities who supply from the conversation) need to be provided first.

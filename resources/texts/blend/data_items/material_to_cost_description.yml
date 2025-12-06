@@ -1,0 +1,7 @@
+name: material_to_cost_description
+versions:
+  - version: 1
+    alias: base
+    template: |
+      This is the map for material/essences. The key value is a name of material always a string and the value is cost one unit of this material.
+      You need to mention material name in key1 and the number in value. If user just mention the material without specifying the number, you need to set the value to empty string.

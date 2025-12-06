@@ -12,6 +12,6 @@ class DataPopulationError(RuntimeError):
   def __str__(self):
     return f"ChatErrorException: {self.message}"
 
-  def get_rule(self):
+  def get_instruction(self):
     return ("Something wrong happen during understanding of user's input data."
             "Ask user to explain more clearly. Problem is ") + self.message

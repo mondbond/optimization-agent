@@ -1,0 +1,6 @@
+name: provide_consumers
+versions:
+  - version: 1
+    alias: base
+    template: |
+      List of consumers (or entities that consume from the conversation) need to be provided first.
