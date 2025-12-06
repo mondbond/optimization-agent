@@ -86,7 +86,7 @@ class TransportationDataModel(AbstractDataModel):
     supplier_to_providers = self._data_map.get(self.SUPPLIER_TO_CONSUMER)
     objective_function = self._data_map.get(self.OBJECTIVE_FUNCTION).data
 
-    instruction_model = ModelValidationInstructions(None, None)
+    instruction_model = ModelValidationInstructions.create_valid()
 
     instruction_model.append_instructions(self.__validate_suppliers(suppliers))
     if not instruction_model.is_valid:

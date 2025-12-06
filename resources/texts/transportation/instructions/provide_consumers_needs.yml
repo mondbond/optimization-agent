@@ -1,6 +1,6 @@
-name: objective_function_instruction
+name: provide_consumer_needs
 versions:
   - version: 1
     alias: base
     template: |
-      Objective function need to be defined. User must select if he want to minimize or maximize the cost of relationship between supplier or provider entities.
+        User need to provide needs of items for consumer (or consume entity)

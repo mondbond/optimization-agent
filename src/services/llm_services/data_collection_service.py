@@ -27,7 +27,7 @@ class RespondUserWithErrorsService:
       ("human", help_answer_prompt)
     ])
 
-    validation_rules = model_validation.rules_for_prompt
+    validation_rules = model_validation.all_instructions
     if validation_rules is None:
       validation_rules = model_validation.rules_for_injections
 
@@ -35,9 +35,12 @@ class RespondUserWithErrorsService:
     answer = chain.invoke({
       "history": history,
       "validation_rules": validation_rules
-    })
+    }).content
 
-    return answer.content
+    if len(model_validation.rules_for_injections) > 0:
+      answer += "\n" + "\n".join(model_validation.rules_for_injections)
+
+    return answer
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ from graph.optimizator.nodes.task_intent_node import task_intent_node
 from src.graph.optimizator.state.optimization_agent_state import \
   OptimizatorAgentState
 from src.graph.optimizator.nodes.answer_node import answer_node
-from src.graph.optimizator.nodes.data_collection_node import data_collection_node
+from src.graph.optimizator.nodes.data_collection_node import data_collection_orhestrator
 
 
 class OptimizatorAgent:
@@ -19,7 +19,7 @@ class OptimizatorAgent:
     memory = InMemorySaver()
 
     graph_builder.add_node("TASK_INTENT_NODE", task_intent_node)
-    graph_builder.add_node("DATA_COLLECTION_NODE", data_collection_node)
+    graph_builder.add_node("DATA_COLLECTION_NODE", data_collection_orhestrator)
     graph_builder.add_node("ANSWER_NODE", answer_node)
     graph_builder.add_node("RE_ASK_NODE", repeat_node)
     graph_builder.add_node("RESOLVE_NODE", solve_node)

@@ -1,0 +1,9 @@
+name: consumer_needs_description
+versions:
+  - version: 1
+    alias: base
+    template: |
+      Use this if user talks about entity that suppose to consume or need something in an abstract or specific way.
+      You need to mention consumer name in key1 and the amount of items it can consume in value.
+      If user just mention the consumer without specifying the amount, you can set the value to empty string.
+

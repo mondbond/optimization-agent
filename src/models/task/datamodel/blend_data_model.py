@@ -99,7 +99,7 @@ class BlendDataModel(AbstractDataModel):
 
     objective_function = self._data_map.get(self.OBJECTIVE_FUNCTION).data
 
-    instructions_model = ModelValidationInstructions(None, None)
+    instructions_model = ModelValidationInstructions.create_valid()
 
     instructions_model.append_instructions(self.__validate_materials(materials))
     if not instructions_model.is_valid:

@@ -11,12 +11,6 @@ class DataModelPopulationService:
   """
 
   @staticmethod
-  def execute(action_list: ExtractionActionList, model) -> ModelValidationInstructions:
-    try:
-      for action in action_list.tasks:
-        model.update_with_action(action)
-    except DataPopulationError as e:
-      return ModelValidationInstructions(rules_for_prompt=[e.get_instruction()],
-                                         rules_for_injections=None)
-
-    return ModelValidationInstructions(rules_for_injections=None, rules_for_prompt=None)
+  def execute(action_list: ExtractionActionList, model):
+    for action in action_list.tasks:
+      model.update_with_action(action)
