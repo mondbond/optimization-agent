@@ -5,8 +5,6 @@ from pathlib import Path
 from services.llm_services.task_identification_service import TaskExtractionService
 
 def load_test_cases():
-
-  # todo wtf
   here = Path(__file__).resolve()
   base = here.parent.parent.parent
 

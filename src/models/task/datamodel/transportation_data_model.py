@@ -1,5 +1,5 @@
 from typing import ClassVar
-from models.model_validation import ModelValidationInstructions
+from models.model_validation import ConversationInstructions
 from models.task.datamodel.abstract_data_model import AbstractDataModel
 from models.task.datamodel.dataitem.float_value_matrix_data_item import \
   FloatValueMatrixDataItem
@@ -65,7 +65,7 @@ class TransportationDataModel(AbstractDataModel):
 
 
   def validate_model_with_instruction(
-      self) -> ModelValidationInstructions | None:
+      self) -> ConversationInstructions | None:
     """
     Method validates the transportation data model and return validation instructions in specified order so
     missing data can be collected step by step.
@@ -86,23 +86,23 @@ class TransportationDataModel(AbstractDataModel):
     supplier_to_providers = self._data_map.get(self.SUPPLIER_TO_CONSUMER)
     objective_function = self._data_map.get(self.OBJECTIVE_FUNCTION).data
 
-    instruction_model = ModelValidationInstructions.create_valid()
+    instruction_model = ConversationInstructions.create_empty()
 
-    instruction_model.append_instructions(self.__validate_suppliers(suppliers))
-    if not instruction_model.is_valid:
+    instruction_model.add_prompt_missed_data_instructions(self.__validate_suppliers(suppliers))
+    if not instruction_model.is_data_model_comlete:
       return instruction_model
 
-    instruction_model.append_instructions(self.__validate_providers(providers))
-    if not instruction_model.is_valid:
+    instruction_model.add_prompt_missed_data_instructions(self.__validate_providers(providers))
+    if not instruction_model.is_data_model_comlete:
       return instruction_model
 
-    instruction_model.append_instructions(
+    instruction_model.add_prompt_missed_data_instructions(
       self.__validate_supplier_to_providers_cost(supplier_to_providers,
                                                  suppliers, providers))
-    if not instruction_model.is_valid:
+    if not instruction_model.is_data_model_comlete:
       return instruction_model
 
-    instruction_model.append_instructions(
+    instruction_model.add_prompt_missed_data_instructions(
       self.__validate_objective_function(objective_function))
 
     return instruction_model

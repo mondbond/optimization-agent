@@ -9,6 +9,10 @@ from functools import lru_cache
 def get_llm(purpose: LlmPurpose = LlmPurpose.DEFAULT, temperature=0):
   """
   Get LLM cached clients based on purpose and temperature.
+
+  It parsed the env setting of the model based on structure {provider}/{model}.
+  F.e. bedrock/anthropic.claude-3-sonnet-20240229-v1:0
+
   :param purpose: f.r. DEFAULT, REASONING, SUMMARY
   :param temperature:
   :return: cached LLM client

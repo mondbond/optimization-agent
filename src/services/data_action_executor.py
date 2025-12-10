@@ -1,5 +1,5 @@
 from models.exceptions.chat_error_exception import DataPopulationError
-from models.model_validation import ModelValidationInstructions
+from models.model_validation import ConversationInstructions
 from models.structured_output.action_extractors import ExtractionActionList
 
 

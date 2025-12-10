@@ -3,7 +3,6 @@ from graph.optimizator.state.optimization_agent_state import \
 from models.enums.optimization_type import OptimizationType
 from models.exceptions.agent_failed_exception import AgentFailedException
 from models.task.abstract_optimization_task import AbstractOptimizationTask
-from models.task.transportation_optimization_task import TransportationOptimizationTask
 from services.llm_services.help_to_identify_task_service import \
   TaskTypeIdentificationHelpAnswerService
 from services.llm_services.task_identification_service import \
@@ -12,9 +11,14 @@ from utils.constants import REGISTERED_TASKS
 from src.utils.logger import logger
 
 
-
-
 def task_intent_node(state: OptimizatorAgentState):
+  """
+  Node to identify the optimization task type from user input.
+  It uses a task extraction service to analyze the conversation history and determine the task type.
+  If the task type is already defined in the state, it routes to the next node.
+  If the task type cannot be identified, it generates a help answer to assist the user.
+  """
+
   if is_task_type_already_defined(state):
     return {
       "route": "next",

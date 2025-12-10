@@ -1,6 +1,6 @@
 from typing import ClassVar
 
-from models.model_validation import ModelValidationInstructions
+from models.model_validation import ConversationInstructions
 from models.task.datamodel.abstract_data_model import AbstractDataModel
 from models.task.datamodel.dataitem.float_value_matrix_data_item import \
   FloatValueMatrixDataItem
@@ -88,7 +88,7 @@ class BlendDataModel(AbstractDataModel):
     return text
 
 
-  def validate_model_with_instruction(self) -> ModelValidationInstructions:
+  def validate_model_with_instruction(self) -> ConversationInstructions:
     materials = self._data_map.get(self.MATERIAL_TO_COST)
     compositions = self._data_map.get(self.COMPOSITIONS)
 
@@ -99,25 +99,25 @@ class BlendDataModel(AbstractDataModel):
 
     objective_function = self._data_map.get(self.OBJECTIVE_FUNCTION).data
 
-    instructions_model = ModelValidationInstructions.create_valid()
+    instructions_model = ConversationInstructions.create_empty()
 
-    instructions_model.append_instructions(self.__validate_materials(materials))
-    if not instructions_model.is_valid:
+    instructions_model.add_prompt_missed_data_instructions(self.__validate_materials(materials))
+    if not instructions_model.is_data_model_comlete:
       return instructions_model
 
-    instructions_model.append_instructions(self.__validate_compositions(compositions))
-    if not instructions_model.is_valid:
+    instructions_model.add_prompt_missed_data_instructions(self.__validate_compositions(compositions))
+    if not instructions_model.is_data_model_comlete:
       return instructions_model
 
-    instructions_model.append_instructions(self.__validate_materials_to_compositions(material_to_compositions, materials, compositions))
-    if not instructions_model.is_valid:
+    instructions_model.add_prompt_missed_data_instructions(self.__validate_materials_to_compositions(material_to_compositions, materials, compositions))
+    if not instructions_model.is_data_model_comlete:
       return instructions_model
 
-    instructions_model.append_instructions(self.__validate_compositions_to_demands(composition_to_demands))
-    if not instructions_model.is_valid:
+    instructions_model.add_prompt_missed_data_instructions(self.__validate_compositions_to_demands(composition_to_demands))
+    if not instructions_model.is_data_model_comlete:
       return instructions_model
 
-    instructions_model.append_instructions(self.__validate_objective_function(objective_function))
+    instructions_model.add_prompt_missed_data_instructions(self.__validate_objective_function(objective_function))
 
     return instructions_model
 

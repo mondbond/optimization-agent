@@ -3,12 +3,15 @@ from langchain.messages import AnyMessage
 
 class HistoryLimitationService:
   """
-  Service to limit the dialog history for LLM prompts.
-  It also formats the dialog history into a proper string representation.
+  Service to limit the dialog history for LLM prompts with window cut.
   """
 
   @classmethod
   def dialog_turn_limiter(cls, history: list[AnyMessage], max_turns=10) -> str:
+    """
+    Method to limit the dialog history for LLM prompts with window cut.
+    :return formated dialog history into a proper string representation.
+    """
     return cls.represent_dialog_format(history[-max_turns:])
 
   @classmethod

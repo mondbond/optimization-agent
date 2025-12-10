@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from pydantic import BaseModel, Field
 
 from models.enums.action_type import ActionType
-from models.model_validation import ModelValidationInstructions
+from models.model_validation import ConversationInstructions
 from models.structured_output.data_extraction_task import DataExtractionAction
 from models.task.datamodel.dataitem.data_item import AbstractDataItem
 from models.task.datamodel.dataitem.float_value_matrix_data_item import \
@@ -41,7 +41,7 @@ class AbstractDataModel(ABC, BaseModel):
     pass
 
   @abstractmethod
-  def validate_model_with_instruction(self) -> ModelValidationInstructions:
+  def validate_model_with_instruction(self) -> ConversationInstructions:
     """
     Validates the data model and returns instructions for any necessary corrections.
     :return: ModelValidationInstructions object containing validation instructions for LLM.

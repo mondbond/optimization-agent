@@ -1,0 +1,36 @@
+- name: "simple transportation action extraction"
+  already_existed_entities: ""
+  history:
+    - role: "user"
+      content: |
+        I have suppliers A and B.
+  expected_actions:
+    - action: "UPDATE"
+      resource: "supplier_availability"
+      key1: "A"
+      key2: ""
+      value: ""
+    - action: "UPDATE"
+      resource: "supplier_availability"
+      key1: "B"
+      key2: ""
+      value: ""
+
+
+#- name: "multiple deliveries"
+#  already_existed_entities: ""
+#  history:
+#    - role: "user"
+#      content: |
+#        Please arrange delivery of 50 boxes of chocolate from supplier A to store X and 30 boxes of vanilla from supplier B to store Y.
+#  expected_actions:
+#    - action_type: "DELIVER"
+#      resource: "chocolate"
+#      source: "supplier A"
+#      destination: "store X"
+#      quantity: 50
+#    - action_type: "DELIVER"
+#      resource: "vanilla"
+#      source: "supplier B"
+#      destination: "store Y"
+#      quantity: 30

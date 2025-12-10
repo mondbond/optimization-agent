@@ -2,7 +2,7 @@ from langchain_core.messages import HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
 
 from llm.llm_provider import get_llm
-from models.model_validation import ModelValidationInstructions
+from models.model_validation import ConversationInstructions
 from models.task.datamodel.transportation_data_model import \
   TransportationDataModel
 from services.history_limitation_service import HistoryLimitationService
@@ -16,7 +16,7 @@ class RespondUserWithErrorsService:
   """
 
   @staticmethod
-  def invoke(history, model_validation: ModelValidationInstructions):
+  def invoke(history, model_validation: ConversationInstructions):
     history = HistoryLimitationService.dialog_turn_limiter(history,
                                                            max_turns=settings.HISTORY_CONTEXT_MULTIPLIER * 3)
     help_answer_prompt = prompt_manager['data_collecting']
@@ -29,7 +29,7 @@ class RespondUserWithErrorsService:
 
     validation_rules = model_validation.all_instructions
     if validation_rules is None:
-      validation_rules = model_validation.rules_for_injections
+      validation_rules = model_validation.after_answer_injections
 
     chain = prompt | llm
     answer = chain.invoke({
@@ -37,8 +37,8 @@ class RespondUserWithErrorsService:
       "validation_rules": validation_rules
     }).content
 
-    if len(model_validation.rules_for_injections) > 0:
-      answer += "\n" + "\n".join(model_validation.rules_for_injections)
+    if len(model_validation.after_answer_injections) > 0:
+      answer += "\n" + "\n".join(model_validation.after_answer_injections)
 
     return answer
 
@@ -62,9 +62,9 @@ if __name__ == "__main__":
 
   validation = model.validate_model_with_instruction()
 
-  print(validation.is_valid)
-  print(validation.rules_for_prompt)
-  print(validation.rules_for_injections)
+  print(validation.is_data_model_comlete)
+  print(validation.missed_data)
+  print(validation.after_answer_injections)
 
   result = RespondUserWithErrorsService.invoke(hist, validation)
 

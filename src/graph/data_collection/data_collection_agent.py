@@ -8,10 +8,17 @@ from graph.data_collection.nodes.data_model_validation_node import \
   data_model_validation
 from graph.data_collection.state.data_collection_state import \
   DataPopulationState
-from models.model_validation import ModelValidationInstructions
+from models.model_validation import ConversationInstructions
 
 
 class DataCollectionAgent:
+  """
+  Agent that orchestrates the data collection process using a state graph.
+  It manages the flow of data extraction, population, and validation through defined nodes.
+
+  Subagent take data model and conversation history as input and process them through a series of nodes to extract.
+  It returns the updated data model after going through the data collection process and validation instructions to translated to user after.
+  """
 
   EXTRACTION_NODE = "EXTRACTION_NODE"
   POPULATION_NODE = "POPULATION_NODE"
@@ -51,8 +58,7 @@ class DataCollectionAgent:
 
     self._graph = graph_builder.compile()
 
-  def run(self, history: list, optimization_data_model, model_validation : ModelValidationInstructions):
-
+  def run(self, history: list, optimization_data_model, model_validation : ConversationInstructions):
     data_collection_agent : DataPopulationState = {
       "history": history,
       "optimization_data_model": optimization_data_model,
