@@ -35,4 +35,4 @@ class TaskExtractionService:
       "optimization_task_descriptions": task_descriptions
     })
 
-    return task_resolver.type
+    return task_resolver

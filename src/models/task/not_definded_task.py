@@ -7,7 +7,7 @@ class NotDefinedOptimizationTask(AbstractOptimizationTask):
 
   @staticmethod
   def prompt_description():
-    return "This optimization type need to be choosen when it is not possible to clearly detect optimization goal. In this case, no specific optimization will be applied."
+    return "need to be selected when nothing ele fit or several optimization types can be possible at the same time from users conversation"
 
   @staticmethod
   def get_type():
@@ -15,4 +15,4 @@ class NotDefinedOptimizationTask(AbstractOptimizationTask):
 
   @staticmethod
   def get_optimization_data_model():
-    raise AgentFailedException("Empty type has no task implementation and can not be choosen")
+    raise AgentFailedException("Empty type has no task implementation and can not be selected")

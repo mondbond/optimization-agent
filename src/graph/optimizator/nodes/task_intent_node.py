@@ -2,6 +2,8 @@ from graph.optimizator.state.optimization_agent_state import \
   OptimizatorAgentState
 from models.enums.optimization_type import OptimizationType
 from models.exceptions.agent_failed_exception import AgentFailedException
+from models.structured_output.optimization_task_resolver import \
+  OptimizationTaskResolver
 from models.task.abstract_optimization_task import AbstractOptimizationTask
 from services.llm_services.help_to_identify_task_service import \
   TaskTypeIdentificationHelpAnswerService
@@ -25,17 +27,18 @@ def task_intent_node(state: OptimizatorAgentState):
     }
 
   history = state.get('history')
-  intent: OptimizationType = TaskExtractionService.invoke(history)
+  task_resolver: OptimizationTaskResolver = TaskExtractionService.invoke(history)
 
-  if is_failed_to_identify_task_type(intent):
-    agent_help_answer = TaskTypeIdentificationHelpAnswerService.invoke(history)
+
+  if is_failed_to_identify_task_type(task_resolver):
+    agent_help_answer = TaskTypeIdentificationHelpAnswerService.invoke(history, task_resolver.question)
 
     return {
       "route": "answer",
       "agent_message": agent_help_answer
     }
 
-  task = identify_task_intent(intent)
+  task = identify_task_intent(task_resolver.type)
 
   return {
     "route": "next",
@@ -44,8 +47,8 @@ def task_intent_node(state: OptimizatorAgentState):
   }
 
 
-def is_failed_to_identify_task_type(intent):
-  return intent == OptimizationType.NONE
+def is_failed_to_identify_task_type(task_resolver: OptimizationTaskResolver):
+  return task_resolver.type == OptimizationType.NONE or task_resolver.confident_score < 8
 
 
 def is_task_type_already_defined(state):

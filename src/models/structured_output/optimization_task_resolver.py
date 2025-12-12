@@ -9,4 +9,11 @@ class OptimizationTaskResolver(BaseModel):
   """
 
   type: OptimizationType = Field(...,
-                                 description="Description of the optimization task to be resolved. Can be only BLENDING choosen")
+                                 description="Type of the optimization task to be resolved.")
+
+  confident_score: int = Field(...,
+                                 description="Score that represent how confident you are in a selected optimization type.")
+
+  question: str = Field(...,
+                                 description="What question would you ask the user to be more confident in your answer?")
+

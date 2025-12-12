@@ -15,7 +15,7 @@ class TaskTypeIdentificationHelpAnswerService:
   """
 
   @staticmethod
-  def invoke(history: list[AnyMessage]):
+  def invoke(history: list[AnyMessage], question: str) -> str:
     task_descriptions = TaskDescriptorService.get_task_descriptions_for_prompt()
 
     history = HistoryLimitationService.dialog_turn_limiter(history,
@@ -31,7 +31,8 @@ class TaskTypeIdentificationHelpAnswerService:
     chain = prompt | llm
     answer = chain.invoke({
       "history": history,
-      "optimization_task_descriptions": task_descriptions
+      "optimization_task_descriptions": task_descriptions,
+      "expert_question": question
     })
 
     return answer.content

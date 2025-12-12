@@ -30,39 +30,59 @@ versions:
       - name: history
         description: The history of conversation with the user.
     template: |
-      You are an expert in understanding user's intent regarding mathematical optimisaton tasks from available.
-      Your goal is to analyze the user's requests and understand the how confident you are that user's needs match one of the provided optimization task types. Also select one of the optimization task types that best matches user's needs if you highly confident in selecting.
-      If you are confident on low or medium level about the match, respond with "none".
+      Your goal is to analyze the conversation history with user and define in structural output: 
+      1. The type of optimization task (of given) user needs help with
+      2. Confidence score (how sure you are about selection) from 0 to 10.
+      3. Question or confirmation to the user that might help you to obtain the higher confidence score later.
       
-      Example:
-      User: I have some supplers and I want to minimize my costs when ordering from them.
-      It's a medium confidence match.
-      
-      Example:
-      User: I have ice cream shop
-      No match to any optimization task type. Respond with "none".
-      
-      Example:
-      User: I want to maximize my profits from selling products online.
-      It's a high confidence match to "Profit Maximization" task type. Select such if such exist
-      
-      Example:
-      User: Ok. I'm pretty sure it's about X type of optimization.
-      It's a high confidence match for X
-    
-
-      Here are the possible optimization task types:
-      
+      1. Here are the possible optimization task types:
         {optimization_task_descriptions}
       
-      The user has provided the following context and history of conversation:
+        - Apply already existing knowledge from conversation history to identify the most suitable optimization task type that aligns with the user's needs.
+      
+      2. Confidence score reasoning:
+        - 9-10 = user explicitly mentions a specific optimization task or reconfirm type from the provided list in history, assign a high confidence score.
+        - 5-8 = user provides detailed information that strongly and clearly suggests a particular one optimization task type.
+        - 3-4 = user's input on abstract level or related to not only one task of given, assign a low confidence score.
+        - 0-2 = user's input does not align with any optimization task type, or not relevant to the goal. Assign type NONE.
+      
+      3. Question or confirmation reasoning:
+        - Think step by step about what additional information or clarification you need from the user to increase your confidence in optimisation task.
+        - Based on already existing knowledge from conversation history, formulate a specific question or confirmation request that would help you to choose existed optimization task with more confidence.
+        - If your confidence score is already medium and higher (6-10), you may ask for confirmation of your choice.
+      
+
+      EXAMPLES:
+      
+      Example:
+      History: I have some X and Y and I want to optimise.
+      
+      Output:
+        Optimization Task Type: NONE
+        Confidence Score: 0
+        Question/Confirmation: Can you provide more details about essence of X and Y and what exactly you want to optimize?
+      
+      
+      Example:
+      User: I want to optimize my supply chain to reduce costs and improve efficiency among suppliers and consumers.
+      
+      Output:
+      Optimization Task Type: TRANSPORTATION
+      Confidence Score: 7
+      Question/Confirmation: I think you want to resolve transportation-like optimisation. Can you confirm it?
+      
+      
+      Example:
+      User: Yes, I want to resolve X task.
+      
+      Output:
+      Optimization Task Type: TRANSPORTATION
+      Confidence Score: 10
+      Question/Confirmation:
+      
+    
+      The user has provided the following context and history of conversation you need to process:
       
         {history}
       
-      
-      Answer format:
-      Based on this information, identify the most suitable optimization task type that aligns with the user's needs. If none of the provided task types are relevant with a high confidence, respond with "none".
-      
-      Please provide only the name of the optimization task type as your response.
-      
-      You response is:
+      Your response is:

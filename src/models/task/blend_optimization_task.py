@@ -10,7 +10,7 @@ class BlendOptimizationTask(AbstractOptimizationTask):
 
   @staticmethod
   def prompt_description():
-    return "This optimization type need to be selected when you can clearly detect entities that mixing/blending together can produce a new entities/products"
+    return "This need to be selected when components or ingredients like entities can be detected and the goal is to create a new product by mixing them in certain proportions only."
 
   @staticmethod
   def get_type():
