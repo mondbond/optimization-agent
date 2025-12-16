@@ -3,4 +3,4 @@ versions:
   - version: 1
     alias: base
     template: |
-      At least one composition/ingredient of material must be provided.
+      User need to provide at least one composition/ingredient of material must be provided.

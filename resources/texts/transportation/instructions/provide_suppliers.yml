@@ -3,4 +3,4 @@ versions:
   - version: 1
     alias: base
     template: |
-      List of suppliers (or entities who supply from the conversation) need to be provided first.
+      User need to provide a list of suppliers (or entities who supply from the conversation).

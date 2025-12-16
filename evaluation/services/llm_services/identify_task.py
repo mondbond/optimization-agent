@@ -27,7 +27,7 @@ def test_identify_task_service(test_case):
 
   identified_intent = TaskExtractionService.invoke(history)
 
-  assert identified_intent.value == expected_intent
+  assert identified_intent.type.value == expected_intent
 
 
 def convert_history(history_data):

@@ -3,4 +3,4 @@ versions:
   - version: 1
     alias: base
     template: |
-      At least one material must be provided.
+      User need to provide at least one material must be provided.

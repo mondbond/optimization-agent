@@ -14,7 +14,7 @@ def data_model_population(state: DataPopulationState):
   Populate and validate the optimization data model using the extracted actions.
   """
   try:
-   __populate_and_validate_data_model(state['optimization_data_model'], state['data_collection_actions'])
+   _populate_and_validate_data_model(state['optimization_data_model'], state['data_collection_actions'])
   except DataPopulationError as e:
     logger.error(f"Error during action extraction: {str(e)}")
 
@@ -30,7 +30,7 @@ def data_model_population(state: DataPopulationState):
     'optimization_data_model': state['optimization_data_model'],
   }
 
-def __populate_and_validate_data_model(data_model: AbstractDataModel, action_list: ExtractionActionList) -> ConversationInstructions:
+def _populate_and_validate_data_model(data_model: AbstractDataModel, action_list: ExtractionActionList) -> ConversationInstructions:
   validation_rules_during_population: ConversationInstructions = DataModelPopulationService.execute(
       action_list, data_model)
 

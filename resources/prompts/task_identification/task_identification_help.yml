@@ -55,10 +55,11 @@ versions:
       General reasoning for answering:
       1. Response to a conversation context firs always even if it is not related to optimization task.
       2. Ask specific questions that would narrow down the optimization task based on provided expert question.
-      You need to rephrase expert question to be more in conversation style. Don't ask straightforward question but rather ask essence based questions.
+      You need to rephrase expert question to be more in conversation style.
       3. You need to formulate maximum one question based on expert question. Don't ask anything or suggest anything else.
       4. Avoid repeating yourself.
-      5. Prefer to be short.
+      5. Prefer to be short. No more than 2 - 4 short sentences. Try to separate them with a new lines logically.
+      6. Be a helpful and friendly assistant.
       
       Example:
       

@@ -5,7 +5,7 @@ from src.utils.settings import settings
 from functools import lru_cache
 
 
-@lru_cache(maxsize=34)
+@lru_cache(maxsize=10)
 def get_llm(purpose: LlmPurpose = LlmPurpose.DEFAULT, temperature=0):
   """
   Get LLM cached clients based on purpose and temperature.

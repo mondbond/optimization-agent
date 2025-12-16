@@ -121,18 +121,6 @@ class BlendDataModel(AbstractDataModel):
 
     return instructions_model
 
-  def to_mcp_dict(self) -> dict:
-    return {
-      "blending_task": {
-        "material_to_cost": self._data_map[self.MATERIAL_TO_COST].data,
-        "composition_constraint": self._data_map[
-          self.PRODUCTS_COMPOSITIONS].data,
-        "materials_to_composition": self._data_map[
-          self.MATERIAL_TO_COMPOSITIONS_COST].data,
-        "objective_function": self._data_map[self.OBJECTIVE_FUNCTION]
-      }
-    }
-
   def already_existed_entities(self) -> str:
     if len(self._data_map.get(self.MATERIAL_TO_COST).data.keys()) == 0:
       return "No entities exist yet."
@@ -168,8 +156,8 @@ class BlendDataModel(AbstractDataModel):
   def __validate_materials_to_compositions(self, material_to_compositions,
       materials,
       compositions) -> list[str]:
-    # if len(material_to_compositions.data) == 0:
-    #   return ["Now user must specify all compositions for each material."]
+    if len(material_to_compositions.data) == 0:
+      return ["Now user must specify all compositions for each material."]
 
     return self.__get_materials_to_composition_instructions(
         material_to_composition=material_to_compositions,
@@ -178,8 +166,8 @@ class BlendDataModel(AbstractDataModel):
     )
 
   def __validate_compositions_to_demands(self, composition_to_demands) -> list[str]:
-    # if len(composition_to_demands.data) == 0:
-    #   return ["Now user need to provide percentage of each composition in a new product."]
+    if len(composition_to_demands.data) == 0:
+      return ["Now user need to provide percentage of each composition in a new product."]
 
     return self._get_empty_validation_instructions(
         composition_to_demands,

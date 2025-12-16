@@ -1,0 +1,36 @@
+prompt_name: confirmation
+versions:
+  - version: 1
+    alias: base
+    description: Initial version of confirmation.
+    variables:
+      - name: history
+        description: The history of conversation with the user.
+    template: |
+      Your goal is to determine whether the user **confirms** or **rejects** the data they previously provided.  
+
+      Definitions:
+        - CONFIRMED: User agrees with or validates the previously provided data.
+            Examples:
+            - "Yes, that's correct."
+            - "I confirm the information."
+            - "All good, proceed with this data."
+        - REJECTED: User disagrees with or requests changes to the previously provided data.
+            Examples:
+            - "No, that's not right."
+            - "I need to change that information."
+            - "Please disregard the previous data." 
+            
+      You have access to the conversation history with the user:
+        
+        {history}
+      
+      
+      Your response should be **only** one of these enum values: CONFIRMED or REJECTED.
+          
+      
+      
+      
+
+      
+      

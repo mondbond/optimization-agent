@@ -28,9 +28,9 @@ def extract_data(state: DataPopulationState):
       'model_validation': state['model_validation'],
       'data_collection_actions': action_list
     }
-  elif __is_user_wants_to_delete_all_data(action_list):
-    state['model_validation'].add_prompt_instructions(
-        ["All data has been deleted by user's request. Starting over."])
+  elif _is_user_wants_to_delete_all_data(action_list):
+    state['model_validation'].add_prompt_missed_data_instructions(
+        ["User wants to delete everything and start from the beginning. All data already deleted. Tell him only that."])
     return {
       'route': 'answer',
       'model_validation': state['model_validation'],
@@ -45,7 +45,7 @@ def extract_data(state: DataPopulationState):
     }
 
 
-def __is_user_wants_to_delete_all_data(action_list: ExtractionActionList):
+def _is_user_wants_to_delete_all_data(action_list: ExtractionActionList):
   for extracted_action in action_list.tasks:
     if extracted_action.action == ActionType.DELETE_ALL:
       logger.info("User requested to delete all data.")

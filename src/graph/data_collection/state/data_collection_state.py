@@ -14,7 +14,7 @@ class DataPopulationState(TypedDict):
   4. model_validation: Instructions for validataion to inject in answering prompt after data caollection graph execution.
   5. user_message: The latest message from the user.
   7. optimization_data_model: The data model used for optimization tasks.
-  It's will be populated during Data Collection phase.
+  It will be populated during Data Collection phase.
   8. is_need_to_delete_all_data: Flag indicating whether all data needs to be deleted.
 
   """

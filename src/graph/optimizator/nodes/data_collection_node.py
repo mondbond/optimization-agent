@@ -36,7 +36,7 @@ def data_collection_orhestrator(state: OptimizatorAgentState):
 
   if data_collection_state.get('model_validation').is_data_model_comlete:
     state['confirmation_stage'] = True
-    data_collection_state['model_validation'].add_prompt_instructions(['Ask user to confirm the collected data before proceeding to optimization.'])
+    data_collection_state['model_validation'].add_prompt_instructions(["Tell user that ' all needed data for optimization is collected'. Ask for confirmation"])
     data_collection_state['model_validation'].add_after_answer_injections([state['optimization_data_model'].get_model_summary()])
 
   answer = RespondUserWithErrorsService.invoke(state['history'],

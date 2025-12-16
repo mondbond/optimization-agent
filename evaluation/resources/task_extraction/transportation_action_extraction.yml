@@ -1,4 +1,4 @@
-- name: "simple transportation action extraction"
+- name: "simple multiple transportation action extraction"
   already_existed_entities: ""
   history:
     - role: "user"
@@ -16,21 +16,59 @@
       key2: ""
       value: ""
 
+- name: "single consumer update"
+  already_existed_entities: ""
+  history:
+    - role: "user"
+      content: |
+        I have consumer C that needs 500 items.
+  expected_actions:
+    - action: "UPDATE"
+      resource: "consumer_needs"
+      key1: "C"
+      key2: ""
+      value: "500"
 
-#- name: "multiple deliveries"
-#  already_existed_entities: ""
-#  history:
-#    - role: "user"
-#      content: |
-#        Please arrange delivery of 50 boxes of chocolate from supplier A to store X and 30 boxes of vanilla from supplier B to store Y.
-#  expected_actions:
-#    - action_type: "DELIVER"
-#      resource: "chocolate"
-#      source: "supplier A"
-#      destination: "store X"
-#      quantity: 50
-#    - action_type: "DELIVER"
-#      resource: "vanilla"
-#      source: "supplier B"
-#      destination: "store Y"
-#      quantity: 30
+- name: "multiple suppliers with availability"
+  already_existed_entities: ""
+  history:
+    - role: "user"
+      content: |
+        Suppliers X, Y, and Z. X can produce 10, Y = 20 and Z can only do 1
+  expected_actions:
+    - action: "UPDATE"
+      resource: "supplier_availability"
+      key1: "X"
+      key2: ""
+      value: "10"
+    - action: "UPDATE"
+      resource: "supplier_availability"
+      key1: "Y"
+      key2: ""
+      value: "20"
+    - action: "UPDATE"
+      resource: "supplier_availability"
+      key1: "Z"
+      key2: ""
+      value: "1"
+
+- name: "supplier removal"
+  already_existed_entities: ""
+  history:
+    - role: "user"
+      content: |
+        Remove supplier D from the list.
+  expected_actions:
+    - action: "REMOVE"
+      resource: "supplier_availability"
+      key1: "D"
+      key2: ""
+      value: ""
+
+- name: "no action needed"
+  already_existed_entities: "supplier F"
+  history:
+    - role: "user"
+      content: |
+        I like this weather
+  expected_actions: []
